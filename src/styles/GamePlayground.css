@@ -1,0 +1,17 @@
+/* src/components/GamePlayground.css */
+.glow-button {
+  background: cyan;
+  color: black;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px cyan, 0 0 25px cyan;
+}
+
+.glow-button:hover,
+.glow-button.active {
+  box-shadow: 0 0 5px cyan, 0 0 50px cyan, 0 0 100px cyan, 0 0 200px cyan;
+}
