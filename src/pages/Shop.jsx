@@ -12,24 +12,10 @@ const Shop = ({
   const [products, setProducts] = useState([
     {
       id: 1,
-      name: "Inter tnum poster, framed",
-      price: 120,
+      name: "Shop is opening soon",
+      price: "tay tuned",
       image_url:
-        "https://images.unsplash.com/photo-1616627455877-47cebb6a2b1b?w=600",
-    },
-    {
-      id: 2,
-      name: "Inter tnum poster",
-      price: 30,
-      image_url:
-        "https://images.unsplash.com/photo-1616627455793-c8db57a97dc0?w=600",
-    },
-    {
-      id: 3,
-      name: "Abstract print",
-      price: 50,
-      image_url:
-        "https://images.unsplash.com/photo-1618005182384-a83a8e1c23b6?w=600",
+        "https://cdn.dribbble.com/userupload/23993643/file/original-601a8616104136c31a2f826346c95a19.gif",
     },
   ]);
   const [message, setMessage] = useState("");

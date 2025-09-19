@@ -55,7 +55,7 @@ const About = ({ setCurrentPage, currentPage }) => {
             {/* Portrait and Social Links */}
             <div className="flex flex-col items-center">
               <img
-                src={`src/assets/IMG-20230125-WA0001.jpg`}
+                src={`public/IMG-20230125-WA0001.jpg`}
                 alt="Placeholder Portrait"
                 className="w-48 h-auto mb-6"
               />
