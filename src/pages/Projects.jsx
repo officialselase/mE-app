@@ -20,7 +20,7 @@ const projects = [
     description:
       "An interactive coding tutorial platform that lets learners pause a video and experiment with the code being taught—right in the same interface.",
     heroImage: "/src/assets/images/mr-ict.jpg",
-    github: "##",
+    github: "https://github.com/woedy/mr_ict_frontend",
     demo: "https://youtu.be/TBdZsbNG8Z0?si=C0XGbGCjqFmPy8Js",
   },
   {
@@ -30,7 +30,7 @@ const projects = [
       "A sharing economy app for bartering goods and services—no money involved.",
     heroImage: "/src/assets/images/swapwing.jpg",
     github: "https://github.com/woedy/swapwing",
-    demo: "https://youtu.be/lvjfaL-MHiw?si=2EU9zhbYU5rUjfLq",
+    demo: "https://www.youtube.com/watch?v=lvjfaL-MHiw&list=PLOvNa3sdza-1zsWfJvDKdXrMVk0-vOYzf&pp=gAQB0gcJCWMEOCosWNin",
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ const projects = [
     description:
       "An election reporting app that collects real-time data directly from the field.",
     heroImage: "/src/assets/images/sels.jpg",
-    github: "##",
+    github: "https://github.com/woedy/ghana_decides_frontend",
     demo: "https://www.youtube.com/watch?v=yourDemoID2",
   },
   {
@@ -47,7 +47,7 @@ const projects = [
     description:
       "An app that helps artists get paid fairly when their music is played on radio or TV.",
     heroImage: "/src/assets/images/zamio.jpg",
-    github: "##",
+    github: "https://github.com/woedy/zamio_frontend",
     demo: "##",
   },
   {
@@ -56,15 +56,15 @@ const projects = [
     description:
       "A simple app to help former students stay connected—across years, programs, and campuses.",
     heroImage: "/src/assets/images/alumni.jpg",
-    github: "##",
-    demo: "##",
+    github: "https://github.com/woedy/wghsoga_backend",
+    demo: "https://www.youtube.com/watch?v=rWl-thnEyQY",
   },
   {
     id: 6,
     title: "Weekend Chef",
     description: "A sharing economy platform for home kitchens.",
     heroImage: "/src/assets/images/chef.jpg",
-    github: "##",
+    github: "https://github.com/woedy/weekend_chef_site",
     demo: "##",
   },
   {
@@ -92,6 +92,14 @@ const projects = [
     heroImage: "/src/assets/images/cancer.jpg",
     github: "#",
     demo: "#",
+  },
+  {
+    id: 10,
+    title: "Gyakies World",
+    description: "A 3D interactive web app showcasing the Artiste Gyakie.",
+    heroImage: "/src/assets/images/js.webpg",
+    github: "https://github.com/woedy/GyakieUniverse_com",
+    demo: "https://gyakie-universe-com.vercel.app/",
   },
 ];
 
