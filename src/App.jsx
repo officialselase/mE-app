@@ -12,6 +12,7 @@ import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
 import Learn from "./pages/Learn";
 import ProjectsRepo from "./pages/ProjectsRepo"; // ✅ New repo page
+import GeminiChatWidget from "./components/GeminiChatWidget"; // ✅ Gemini Chat Widget
 
 const App = () => {
   const [cartCount, setCartCount] = useState(0);
@@ -115,6 +116,9 @@ const App = () => {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      {/* Gemini Chat Component - Always available */}
+      <GeminiChatWidget />
     </div>
   );
 };

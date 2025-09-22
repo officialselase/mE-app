@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Project data with hero images (placeholders from Unsplash)
-const projects = [
+export const projects = [
   {
     id: 0,
     title: "Introduction to My Projects",
     description:
       "Discover my passion projects and experiments that blend creativity, technology, and problem-solving. From interactive apps to innovative tools, each one tells a story of exploration and innovation.",
-    heroImage: "public/images/intro-hero.jpg",
+    heroImage: "/images/intro-hero.jpg",
     github: "#",
     demo: "#",
     isIntro: true,
@@ -19,7 +19,7 @@ const projects = [
     title: "Mr. ICT",
     description:
       "An interactive coding tutorial platform that lets learners pause a video and experiment with the code being taught—right in the same interface.",
-    heroImage: "public/images/mr-ict.jpg",
+    heroImage: "/images/mr-ict.jpg",
     github: "https://github.com/woedy/mr_ict_frontend",
     demo: "https://youtu.be/TBdZsbNG8Z0?si=C0XGbGCjqFmPy8Js",
   },
@@ -28,7 +28,7 @@ const projects = [
     title: "SwapWing",
     description:
       "A sharing economy app for bartering goods and services—no money involved.",
-    heroImage: "public/images/swapwing.jpg",
+    heroImage: "/images/swapwing.jpg",
     github: "https://github.com/woedy/swapwing",
     demo: "https://www.youtube.com/watch?v=lvjfaL-MHiw&list=PLOvNa3sdza-1zsWfJvDKdXrMVk0-vOYzf&pp=gAQB0gcJCWMEOCosWNin",
   },
@@ -37,7 +37,7 @@ const projects = [
     title: "Smart ELection Ledger System (SELS)",
     description:
       "An election reporting app that collects real-time data directly from the field.",
-    heroImage: "public/images/sels.jpg",
+    heroImage: "/images/sels.jpg",
     github: "https://github.com/woedy/ghana_decides_frontend",
     demo: "https://www.youtube.com/watch?v=yourDemoID2",
   },
@@ -46,7 +46,7 @@ const projects = [
     title: "Zamio",
     description:
       "An app that helps artists get paid fairly when their music is played on radio or TV.",
-    heroImage: "public/images/zamio.jpg",
+    heroImage: "/images/zamio.jpg",
     github: "https://github.com/woedy/zamio_frontend",
     demo: "##",
   },
@@ -63,7 +63,7 @@ const projects = [
     id: 6,
     title: "Weekend Chef",
     description: "A sharing economy platform for home kitchens.",
-    heroImage: "public/images/chef.jpg",
+    heroImage: "/images/chef.jpg",
     github: "https://github.com/woedy/weekend_chef_site",
     demo: "##",
   },
@@ -71,7 +71,7 @@ const projects = [
     id: 7,
     title: "Messibo",
     description: "Testing a VoIP API framework.",
-    heroImage: "public/images/voip.jpg",
+    heroImage: "/images/voip.jpg",
     github: "##",
     demo: "##",
   },
@@ -80,7 +80,7 @@ const projects = [
     title: "Mind Canvas",
     description:
       "A creative app that transforms kids drawings to interactive stories.",
-    heroImage: "public/images/mind.jpg",
+    heroImage: "/images/mind.jpg",
     github: "#",
     demo: "#",
   },
@@ -89,7 +89,7 @@ const projects = [
     title: "Ghana Cancer Support Group App (My Storms End)",
     description:
       "An app to help cancer patients, survivors and caregivers connect, share resources, and find support.",
-    heroImage: "public/images/cancer.jpg",
+    heroImage: "/images/cancer.jpg",
     github: "#",
     demo: "#",
   },
@@ -97,7 +97,7 @@ const projects = [
     id: 10,
     title: "Gyakies World",
     description: "A 3D interactive web app showcasing the Artiste Gyakie.",
-    heroImage: "public/images/js.webp",
+    heroImage: "/images/js.webp",
     github: "https://github.com/woedy/GyakieUniverse_com",
     demo: "https://gyakie-universe-com.vercel.app/",
   },

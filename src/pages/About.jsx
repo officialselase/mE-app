@@ -55,7 +55,7 @@ const About = ({ setCurrentPage, currentPage }) => {
             {/* Portrait and Social Links */}
             <div className="flex flex-col items-center">
               <img
-                src={`public/IMG-20230125-WA0001.jpg`}
+                src={`/IMG-20230125-WA0001.jpg`}
                 alt="Placeholder Portrait"
                 className="w-48 h-auto mb-6"
               />
@@ -137,7 +137,9 @@ const About = ({ setCurrentPage, currentPage }) => {
 
             <p className="mt-4">
               Languages I Speak: Html, CSS, JavaScript, Python,
-              Node.js(JavaScript runtime), Dart, SQL. Although you can say i understand all languages because of their painfully consistent syntax. I mean essentially they are all the same. :-*{" "}
+              Node.js(JavaScript runtime), Dart, SQL. Although you can say i
+              understand all languages because of their painfully consistent
+              syntax. I mean essentially they are all the same. :-*{" "}
             </p>
             <p className="mt-4">
               Frameworks & Libraries: React, Django, Flutter{" "}
@@ -161,10 +163,12 @@ const About = ({ setCurrentPage, currentPage }) => {
               pick a favorite. Really, the craft of programming is 99% "the
               fuzzy parts"—concepts, data structures, best practices, people,
               culture and many other aspects that are agnostic to a particular
-              programming language. Algorithms should be the focus of every programmer
-              or aspiring programmer. Computers are mind numbingly dumb so always looking to solve 
-              the problem on paper first and foremost before anything else. Using plain English, yes i am 
-              talking about Pseudocode. The brain is a much better computer anyways so use it. After-all code is everywhere.
+              programming language. Algorithms should be the focus of every
+              programmer or aspiring programmer. Computers are mind numbingly
+              dumb so always looking to solve the problem on paper first and
+              foremost before anything else. Using plain English, yes i am
+              talking about Pseudocode. The brain is a much better computer
+              anyways so use it. After-all code is everywhere.
             </p>
             <p className="mt-4">
               Python – a language I genuinely find 'cool' for its incredible
