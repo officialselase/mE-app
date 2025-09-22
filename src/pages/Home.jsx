@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+export const homeSummary = `
+The Home page is the landing space of Selase’s portfolio.
+It welcomes visitors warmly, highlights his creativity and values,
+and introduces featured projects and writings.
+It serves as the entry point to explore the rest of the site.
+`;
+
 const Home = ({ setCurrentPage, currentPage }) => {
   const [projects, setProjects] = useState([]);
   const [thoughts, setThoughts] = useState([]);

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+export const thoughtsSummary = `
+The Thoughts page is Selase’s writing space. It features essays,
+reflections, and commentary on technology, creativity, fair pay for
+artists, and his personal journey. It gives visitors a window into
+his values and perspectives.
+`;
+
 const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
   useEffect(() => {
     if (currentPage === "thoughts") {

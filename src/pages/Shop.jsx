@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 
+export const shopSummary = `
+The Shop page showcases creative merchandise and digital offerings
+connected to Selase’s journey. It links creativity, music, and tech,
+and is designed to give visitors a way to support his work directly.
+`;
+
 const Shop = ({
   setCurrentPage,
   currentPage,

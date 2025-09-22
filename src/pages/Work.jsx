@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+export const workSummary = `
+The Work page presents Selase’s professional projects and collaborations.
+It shows his technical engineering side, with details of coding,
+design, and innovation contributions. Visitors see the scope of his
+real-world impact through this page.
+`;
+
 const Work = ({ setCurrentPage, currentPage, cartCount }) => {
   const workExperience = [
     {

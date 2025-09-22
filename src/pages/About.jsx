@@ -1,5 +1,12 @@
 import React from "react";
 
+export const aboutSummary = `
+The About page introduces Selase personally. It highlights his Ghanaian
+roots, his philosophy of fair pay for fair work, and his passion for
+building technology that empowers others. It also emphasizes creativity,
+community, and mentorship as central to his journey.
+`;
+
 const About = ({ setCurrentPage, currentPage }) => {
   const dummyImageUrl = "src/assets/react.svg"; // Original dummy image URL
   return (

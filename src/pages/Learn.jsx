@@ -4,6 +4,12 @@ import { useNavigate } from "react-router-dom";
 import VideoPlayer from "../components/VideoPlayer"; // ✅ Your component
 import "../styles/GamePlayground.css";
 
+export const learnSummary = `
+The Learn page is an educational space where Selase shares resources,
+insights, and tutorials. It is focused on mentorship, coding guidance,
+and knowledge-sharing to help others grow in tech.
+`;
+
 const Learn = ({ setCurrentPage, currentPage }) => {
   const navigate = useNavigate();
 

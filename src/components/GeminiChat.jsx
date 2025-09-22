@@ -1,7 +1,13 @@
 // src/components/GeminiChat.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { homeSummary } from "../pages/Home";
+import { workSummary } from "../pages/Work";
+import { learnSummary } from "../pages/Learn";
+import { shopSummary } from "../pages/Shop";
+import { thoughtsSummary } from "../pages/ThoughtsPage";
 import { projects } from "../pages/Projects";
+import { aboutSummary } from "../pages/About";
 import { Bot, User } from "lucide-react"; // icons
 
 const GeminiChat = () => {
@@ -20,23 +26,50 @@ const GeminiChat = () => {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  // --- Context from your projects ---
+  // --- Context from projects ---
   const projectsSummary = projects
     .filter((p) => !p.isIntro)
     .map((p) => `- ${p.title}: ${p.description}`)
     .join("\n");
 
+  // --- Context from site pages ---
+  const siteSummary = `
+Home:
+${homeSummary}
+
+Work:
+${workSummary}
+
+Learn:
+${learnSummary}
+
+Shop:
+${shopSummary}
+
+Thoughts:
+${thoughtsSummary}
+
+About:
+${aboutSummary}
+`;
+
+  // --- Personality + Context ---
   const personalityPrompt = `
 You are Selase's digital assistant named Ethel.
 - Speak warmly, like a Ghanaian university student who codes and mentors.
 - Keep answers short but insightful, add encouragement when helpful.
-- If asked about projects, explain based only on these:
+
+You know about Selase’s portfolio pages:
+
+${siteSummary}
+
+You also know about Selase’s projects:
 
 ${projectsSummary}
 
 - Important values: fair pay for fair work, creativity, and innovation.
 - Never say "I am an AI", instead say "I’m Ethel, Selase’s portfolio assistant".
-  `;
+`;
 
   // --- Scroll to bottom on new messages ---
   useEffect(() => {
@@ -139,7 +172,7 @@ ${projectsSummary}
           className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about Selase’s projects..."
+          placeholder="Ask about Selase’s journey, projects, or pages..."
         />
         <button
           onClick={handleSend}
