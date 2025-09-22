@@ -52,14 +52,14 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
 
   // Restored original gallery images
   const galleryImages = [
-    "public/images/Carespot back.png",
-    "public/images/Carespot logo - IG --1.jpg",
-    "public/images/Carespot logo - IG -.jpg",
-    "public/images/Carespot logo - IG.jpg",
-    "public/images/Carespot logo.png",
-    "public/images/coding class-1.jpg",
-    "public/images/coding class-2.jpg",
-    "public/images/Mr ICT uni(2)(1).jpg",
+    "/images/Carespot back.png",
+    "/images/Carespot logo - IG --1.jpg",
+    "/images/Carespot logo - IG -.jpg",
+    "/images/Carespot logo - IG.jpg",
+    "/images/Carespot logo.png",
+    "/images/coding class-1.jpg",
+    "/images/coding class-2.jpg",
+    "/images/Mr ICT uni(2)(1).jpg",
   ];
 
   const [selectedPost, setSelectedPost] = useState(null);
