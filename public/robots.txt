@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Disallow authentication pages from search engines
+Disallow: /login
+Disallow: /register
+
+# Disallow admin areas
+Disallow: /admin/
+
+# Allow all other pages
+Allow: /
+Allow: /about
+Allow: /projects
+Allow: /work
+Allow: /thoughts
+Allow: /shop
+Allow: /learn
+
+# Sitemap location
+Sitemap: https://ransfordantwi.com/sitemap.xml

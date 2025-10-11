@@ -6,7 +6,7 @@ import { workSummary } from "../pages/Work";
 import { learnSummary } from "../pages/Learn";
 import { shopSummary } from "../pages/Shop";
 import { thoughtsSummary } from "../pages/ThoughtsPage";
-import { projects } from "../pages/Projects";
+import { projectsSummary } from "../pages/Projects";
 import { aboutSummary } from "../pages/About";
 import { Bot, User } from "lucide-react"; // icons
 
@@ -27,10 +27,7 @@ const GeminiChat = () => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   // --- Context from projects ---
-  const projectsSummary = projects
-    .filter((p) => !p.isIntro)
-    .map((p) => `- ${p.title}: ${p.description}`)
-    .join("\n");
+  // Using the imported projectsSummary directly
 
   // --- Context from site pages ---
   const siteSummary = `

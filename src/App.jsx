@@ -1,18 +1,30 @@
 // src/App.jsx
-import React, { useState } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
 import PageHeader from "./components/PageHeader";
+import AnimatedPageTransition from "./components/AnimatedPageTransition";
+import ErrorBoundary from "./components/ErrorBoundary";
+import OfflineDetector from "./components/OfflineDetector";
+import ProtectedRoute from "./components/ProtectedRoute";
+import SkeletonLoader from "./components/SkeletonLoader";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Projects from "./pages/Projects";
-import Work from "./pages/Work";
-import ThoughtsPage from "./pages/ThoughtsPage";
-import Shop from "./pages/Shop";
-import Cart from "./pages/Cart";
-import Learn from "./pages/Learn";
-import ProjectsRepo from "./pages/ProjectsRepo"; // ✅ New repo page
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import GeminiChatWidget from "./components/GeminiChatWidget"; // ✅ Gemini Chat Widget
+
+// Lazy load route components for code splitting
+const Projects = lazy(() => import("./pages/Projects"));
+const Work = lazy(() => import("./pages/Work"));
+const ThoughtsPage = lazy(() => import("./pages/ThoughtsPage"));
+const Shop = lazy(() => import("./pages/Shop"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Learn = lazy(() => import("./pages/Learn"));
+const CourseDetail = lazy(() => import("./pages/CourseDetail"));
+const ProjectsRepo = lazy(() => import("./pages/ProjectsRepo"));
 
 const App = () => {
   const [cartCount, setCartCount] = useState(0);
@@ -48,77 +60,152 @@ const App = () => {
   };
 
   return (
-    <div className={`min-h-screen ${getPageBgClass()}`}>
-      {location.pathname !== "/projects" && (
-        <PageHeader
-          setCurrentPage={handleNavigate}
-          currentPage={currentPage}
+    <AuthProvider>
+      <ToastProvider>
+        <AppContent
           cartCount={cartCount}
-          className="bg-white"
+          cart={cart}
+          setCart={setCart}
+          setCartCount={setCartCount}
+          handleNavigate={handleNavigate}
+          currentPage={currentPage}
+          getPageBgClass={getPageBgClass}
         />
-      )}
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Home setCurrentPage={handleNavigate} currentPage={currentPage} />
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <About setCurrentPage={handleNavigate} currentPage={currentPage} />
-          }
-        />
-        <Route path="/work" element={<Work />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/thoughts" element={<ThoughtsPage />} />
-        <Route
-          path="/shop"
-          element={
-            <Shop
-              setCurrentPage={handleNavigate}
-              currentPage={currentPage}
-              cart={cart}
-              setCart={setCart}
-              cartCount={cartCount}
-              setCartCount={setCartCount}
+      </ToastProvider>
+    </AuthProvider>
+  );
+};
+
+const AppContent = ({
+  cartCount,
+  cart,
+  setCart,
+  setCartCount,
+  handleNavigate,
+  currentPage,
+  getPageBgClass,
+}) => {
+  const location = useLocation();
+
+  return (
+    <div className={`min-h-screen ${getPageBgClass()}`}>
+      {location.pathname !== "/projects" &&
+        location.pathname !== "/login" &&
+        location.pathname !== "/register" && (
+          <PageHeader
+            setCurrentPage={handleNavigate}
+            currentPage={currentPage}
+            cartCount={cartCount}
+            className="bg-white"
+          />
+        )}
+      <ErrorBoundary>
+        <AnimatedPageTransition>
+          <Suspense fallback={<div className="p-8"><SkeletonLoader variant="card" count={3} /></div>}>
+            <Routes>
+            <Route
+              path="/"
+              element={
+                <Home setCurrentPage={handleNavigate} currentPage={currentPage} />
+              }
             />
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <Cart
-              setCurrentPage={handleNavigate}
-              currentPage={currentPage}
-              cart={cart}
-              setCart={setCart}
-              cartCount={cartCount}
-              setCartCount={setCartCount}
+            <Route
+              path="/about"
+              element={
+                <About setCurrentPage={handleNavigate} currentPage={currentPage} />
+              }
             />
-          }
-        />
-        <Route
-          path="/learn"
-          element={
-            <Learn setCurrentPage={handleNavigate} currentPage={currentPage} />
-          }
-        />
-        <Route
-          path="/projects-repo"
-          element={
-            <ProjectsRepo
-              setCurrentPage={handleNavigate}
-              currentPage={currentPage}
+            <Route path="/work" element={<Work />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/thoughts" element={<ThoughtsPage />} />
+            <Route
+              path="/shop"
+              element={
+                <Shop
+                  setCurrentPage={handleNavigate}
+                  currentPage={currentPage}
+                  cart={cart}
+                  setCart={setCart}
+                  cartCount={cartCount}
+                  setCartCount={setCartCount}
+                />
+              }
             />
-          }
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+            <Route
+              path="/cart"
+              element={
+                <Cart
+                  setCurrentPage={handleNavigate}
+                  currentPage={currentPage}
+                  cart={cart}
+                  setCart={setCart}
+                  cartCount={cartCount}
+                  setCartCount={setCartCount}
+                />
+              }
+            />
+
+            {/* Protected Routes - Require Authentication */}
+            <Route
+              path="/learn"
+              element={
+                <ProtectedRoute>
+                  <Learn
+                    setCurrentPage={handleNavigate}
+                    currentPage={currentPage}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/learn/courses/:courseId"
+              element={
+                <ProtectedRoute>
+                  <CourseDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects-repo"
+              element={
+                <ProtectedRoute>
+                  <ProjectsRepo
+                    setCurrentPage={handleNavigate}
+                    currentPage={currentPage}
+                  />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Auth Routes - Only accessible when not authenticated */}
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Login />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Register />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </AnimatedPageTransition>
+      </ErrorBoundary>
 
       {/* Gemini Chat Component - Always available */}
       <GeminiChatWidget />
+      
+      {/* Offline Detection Banner */}
+      <OfflineDetector />
     </div>
   );
 };

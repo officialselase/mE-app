@@ -2,6 +2,11 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import VideoPlayer from "../components/VideoPlayer"; // ✅ Your component
+import CoursesList from "../components/CoursesList";
+import useCourses from "../hooks/useCourses";
+import { useAuth } from "../context/AuthContext";
+import OptimizedImage from "../components/OptimizedImage";
+import MetaTags from "../components/MetaTags";
 import "../styles/GamePlayground.css";
 
 export const learnSummary = `
@@ -12,6 +17,8 @@ and knowledge-sharing to help others grow in tech.
 
 const Learn = ({ setCurrentPage, currentPage }) => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { courses, loading, error, enrollInCourse, retry } = useCourses();
 
   const [formData, setFormData] = useState({
     studentName: "",
@@ -22,6 +29,7 @@ const Learn = ({ setCurrentPage, currentPage }) => {
     classOption: "",
   });
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [enrollmentError, setEnrollmentError] = useState(null);
 
   const handleChange = useCallback((e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -43,6 +51,17 @@ const Learn = ({ setCurrentPage, currentPage }) => {
     });
   }, []);
 
+  const handleEnrollInCourse = useCallback(async (courseId) => {
+    try {
+      setEnrollmentError(null);
+      await enrollInCourse(courseId);
+    } catch (error) {
+      setEnrollmentError(error.message);
+      // Auto-clear error after 5 seconds
+      setTimeout(() => setEnrollmentError(null), 5000);
+    }
+  }, [enrollInCourse]);
+
   const sections = useMemo(
     () => [
       // Hero
@@ -51,10 +70,11 @@ const Learn = ({ setCurrentPage, currentPage }) => {
         content: (
           <section className="bg-white py-20 text-center">
             <div className="max-w-4xl mx-auto px-6">
-              <img
+              <OptimizedImage
                 src="https://cdn.dribbble.com/userupload/20477400/file/original-c84e51367767f2a7c485a43d820bde27.gif"
                 alt="Learning Animation"
                 className="w-full max-h-96 object-contain mx-auto mb-10"
+                lazy={false}
               />
               <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
                 Learn, Grow, Build Your Future
@@ -85,7 +105,7 @@ const Learn = ({ setCurrentPage, currentPage }) => {
                   digital futures.
                 </p>
               </div>
-              <img
+              <OptimizedImage
                 src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800"
                 alt="Students coding"
                 className="rounded-lg shadow-md"
@@ -130,6 +150,46 @@ const Learn = ({ setCurrentPage, currentPage }) => {
           </section>
         ),
       },
+      // Courses Section (only show if authenticated)
+      ...(isAuthenticated ? [{
+        id: "courses",
+        content: (
+          <section className="bg-white py-20">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  Available Courses
+                </h2>
+                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                  Explore our comprehensive courses designed to take you from beginner to professional. 
+                  Each course includes hands-on projects, assignments, and community interaction.
+                </p>
+              </div>
+              
+              {enrollmentError && (
+                <div className="mb-6 max-w-md mx-auto">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-red-800 text-sm">{enrollmentError}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <CoursesList
+                courses={courses}
+                loading={loading}
+                error={error}
+                onEnroll={handleEnrollInCourse}
+                onRetry={retry}
+              />
+            </div>
+          </section>
+        ),
+      }] : []),
       // Form
       {
         id: "form",
@@ -249,17 +309,25 @@ const Learn = ({ setCurrentPage, currentPage }) => {
         ),
       },
     ],
-    [handleSubmit, handleChange, navigate]
+    [handleSubmit, handleChange, navigate, isAuthenticated, courses, loading, error, handleEnrollInCourse, retry, enrollmentError]
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-900 font-sans antialiased">
+    <>
+      <MetaTags
+        title="Learn - Ransford Antwi"
+        description="Access educational resources, tutorials, and courses from Ransford Antwi. Learn web development, programming concepts, and advance your technical skills."
+        keywords="learn, education, tutorials, courses, web development, programming, mentorship, Ransford Antwi"
+        url={`${window.location.origin}/learn`}
+      />
+      <div className="flex flex-col min-h-screen bg-white text-gray-900 font-sans antialiased">
       <main className="flex-grow">
         {sections.map((section) => (
           <div key={section.id}>{section.content}</div>
         ))}
       </main>
     </div>
+    </>
   );
 };
 

@@ -1,4 +1,7 @@
 import React from "react";
+import OptimizedImage from "../components/OptimizedImage";
+import MetaTags from "../components/MetaTags";
+import StructuredData, { createPersonSchema } from "../components/StructuredData";
 
 export const aboutSummary = `
 The About page introduces Selase personally. It highlights his Ghanaian
@@ -10,8 +13,17 @@ community, and mentorship as central to his journey.
 const About = ({ setCurrentPage, currentPage }) => {
   const dummyImageUrl = "src/assets/react.svg"; // Original dummy image URL
   return (
-    <div className="min-h-screen font-sans antialiased">
+    <>
+      <MetaTags
+        title="About - Ransford Antwi"
+        description="Learn about Ransford Antwi, a passionate full stack developer from Ghana. Discover his journey, philosophy of fair work, and commitment to building technology that empowers others."
+        keywords="Ransford Antwi, about, Ghana, full stack developer, software engineer, biography, philosophy"
+        url={`${window.location.origin}/about`}
+      />
+      <StructuredData data={createPersonSchema()} />
+      <div className="min-h-screen font-sans antialiased">
       <div className="w-full max-w-screen-xl mx-auto py-10 px-4 sm:px-6 md:px-8 flex flex-col ">
+        <h1 className="sr-only">About Ransford Antwi - Full Stack Developer</h1>
         {/* Top Section */}
         <div className="flex flex-col md:flex-row justify-center items-center mb-16 md:space-x-6">
           {/* Left Side */}
@@ -61,10 +73,11 @@ const About = ({ setCurrentPage, currentPage }) => {
           <div className="flex-1 flex flex-col items-center">
             {/* Portrait and Social Links */}
             <div className="flex flex-col items-center">
-              <img
-                src={`/IMG-20230125-WA0001.jpg`}
-                alt="Placeholder Portrait"
+              <OptimizedImage
+                src="/IMG-20230125-WA0001.jpg"
+                alt="Selase - Software Developer Portrait"
                 className="w-48 h-auto mb-6"
+                lazy={false}
               />
               <div className="text-right md:text-center text-base font-medium space-y-3 text-gray-700">
                 <p>
@@ -220,6 +233,7 @@ const About = ({ setCurrentPage, currentPage }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 export default About;

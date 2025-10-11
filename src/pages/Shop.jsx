@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useToast } from "../context/ToastContext";
+import MetaTags from "../components/MetaTags";
 
 export const shopSummary = `
 The Shop page showcases creative merchandise and digital offerings
@@ -24,7 +26,7 @@ const Shop = ({
         "https://cdn.dribbble.com/userupload/23993643/file/original-601a8616104136c31a2f826346c95a19.gif",
     },
   ]);
-  const [message, setMessage] = useState("");
+  const { success } = useToast();
 
   useEffect(() => {
     if (currentPage === "shop") {
@@ -55,14 +57,20 @@ const Shop = ({
               : item
           )
         : [...prevCart, { ...product, quantity: 1 }];
-      setMessage(`${product.name} added to cart!`);
-      setTimeout(() => setMessage(""), 2000);
+      success(`${product.name} added to cart!`);
       return newCart;
     });
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
+      <MetaTags
+        title="Shop - Ransford Antwi"
+        description="Coming soon! Explore creative merchandise and digital offerings from Ransford Antwi. Support his work through unique products and digital content."
+        keywords="shop, merchandise, digital products, coming soon, Ransford Antwi, creative products"
+        url={`${window.location.origin}/shop`}
+      />
+      <div className="flex flex-col min-h-screen">
       <section className="bg-white text-gray-900 py-10 px-4 sm:px-6 md:px-12 flex-grow">
         <div className="max-w-6xl mx-auto">
           {/* Title */}
@@ -112,12 +120,11 @@ const Shop = ({
               ))}
             </div>
           )}
-          {message && (
-            <p className="text-green-600 mt-4 text-center">{message}</p>
-          )}
+
         </div>
       </section>
     </div>
+    </>
   );
 };
 

@@ -3,10 +3,119 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font optimization with font-display: swap */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'System UI';
+  src: local(-apple-system), local(BlinkMacSystemFont), local('Segoe UI'), local(Roboto), local(Oxygen), local(Ubuntu), local(sans-serif);
+  font-display: swap;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+  font-family: 'Inter', 'System UI', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Micro-interactions for interactive elements */
+button, 
+.btn,
+a:not(.no-hover),
+[role="button"] {
+  transition: all 0.15s ease-in-out;
+  transform-origin: center;
+}
+
+button:hover:not(:disabled),
+.btn:hover:not(:disabled),
+a:hover:not(.no-hover),
+[role="button"]:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+a:active:not(.no-hover),
+[role="button"]:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Card hover effects */
+.card-hover,
+.project-card,
+.thought-card,
+.work-card {
+  transition: all 0.2s ease-in-out;
+  transform-origin: center;
+}
+
+.card-hover:hover,
+.project-card:hover,
+.thought-card:hover,
+.work-card:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Navigation item hover effects */
+nav button,
+nav a {
+  position: relative;
+  transition: all 0.15s ease-in-out;
+}
+
+nav button:hover,
+nav a:hover {
+  color: inherit;
+  opacity: 0.8;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Loading state animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
 }
