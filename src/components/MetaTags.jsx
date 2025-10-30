@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { Helmet } from "react-helmet";
 
 const MetaTags = ({
   title = "Selase K. - Full Stack Developer & Software Engineer",
