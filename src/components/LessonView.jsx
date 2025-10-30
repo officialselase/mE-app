@@ -1,27 +1,51 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
-import { apiClient } from '../utils/api';
+import { learnAPI, handleDjangoError } from '../utils/djangoApi';
 
-const LessonView = ({ lesson, onComplete, isCompleted, assignments = [] }) => {
+const LessonView = ({ lesson, onComplete, isCompleted }) => {
   const [completing, setCompleting] = useState(false);
   const [error, setError] = useState(null);
+  const [assignments, setAssignments] = useState([]);
+  const [loadingAssignments, setLoadingAssignments] = useState(false);
 
   const handleMarkComplete = useCallback(async () => {
-    if (completing || isCompleted) return;
+    if (completing || isCompleted) {return;}
     
     try {
       setCompleting(true);
       setError(null);
       
-      await apiClient.put(`/api/lessons/${lesson.id}/complete`);
+      await learnAPI.completeLesson(lesson.id);
       onComplete(lesson.id);
     } catch (err) {
       console.error('Error marking lesson as complete:', err);
-      setError(err.response?.data?.error || err.message || 'Failed to mark lesson as complete');
+      const djangoError = handleDjangoError(err);
+      setError(djangoError.message);
     } finally {
       setCompleting(false);
     }
   }, [lesson.id, onComplete, completing, isCompleted]);
+
+  // Fetch assignments for the lesson
+  const fetchAssignments = useCallback(async () => {
+    if (!lesson?.id) {return;}
+    
+    try {
+      setLoadingAssignments(true);
+      const response = await learnAPI.getAssignments(lesson.id);
+      setAssignments(response.data.results || response.data);
+    } catch (err) {
+      console.error('Error fetching assignments:', err);
+      // Don't show error for assignments, just log it
+      setAssignments([]);
+    } finally {
+      setLoadingAssignments(false);
+    }
+  }, [lesson?.id]);
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [fetchAssignments]);
 
   if (!lesson) {
     return (
@@ -41,7 +65,7 @@ const LessonView = ({ lesson, onComplete, isCompleted, assignments = [] }) => {
           <div>
             <h2 className="text-2xl font-bold mb-2">{lesson.title}</h2>
             <div className="flex items-center space-x-4 text-indigo-100">
-              <span className="text-sm">Lesson {lesson.order}</span>
+              <span className="text-sm">Lesson {lesson.order_index + 1}</span>
               {isCompleted && (
                 <div className="flex items-center">
                   <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -93,11 +117,16 @@ const LessonView = ({ lesson, onComplete, isCompleted, assignments = [] }) => {
         </div>
 
         {/* Assignments Section */}
-        {assignments && assignments.length > 0 && (
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Assignments ({assignments.length})
-            </h3>
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Assignments {loadingAssignments ? '(Loading...)' : `(${assignments.length})`}
+          </h3>
+          
+          {loadingAssignments ? (
+            <div className="text-center py-4">
+              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
+            </div>
+          ) : assignments.length > 0 ? (
             <div className="space-y-4">
               {assignments.map((assignment) => (
                 <div
@@ -145,8 +174,12 @@ const LessonView = ({ lesson, onComplete, isCompleted, assignments = [] }) => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p>No assignments for this lesson</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

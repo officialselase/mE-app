@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const CourseCard = ({ course, onEnroll }) => {
+const CourseCard = ({ course, onEnroll, isEnrolling, showProgress = false }) => {
   const navigate = useNavigate();
-  const [enrolling, setEnrolling] = useState(false);
+  const [localEnrolling, setLocalEnrolling] = useState(false);
 
   const handleEnroll = async () => {
-    if (enrolling) return;
+    if (localEnrolling || isEnrolling) {return;}
     
     try {
-      setEnrolling(true);
+      setLocalEnrolling(true);
       await onEnroll(course.id);
     } catch (error) {
       // Error is handled by the parent component
     } finally {
-      setEnrolling(false);
+      setLocalEnrolling(false);
     }
   };
 
@@ -41,9 +41,31 @@ const CourseCard = ({ course, onEnroll }) => {
         </p>
         
         <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-          <span>Instructor: {course.instructor_name}</span>
+          <span>Lessons: {course.lessons?.length || 0}</span>
           <span>{new Date(course.created_at).toLocaleDateString()}</span>
         </div>
+        
+        {/* Progress indicator for enrolled courses */}
+        {showProgress && course.is_enrolled && course.enrollment && (
+          <div className="mb-4">
+            <div className="flex justify-between text-sm text-gray-600 mb-1">
+              <span>Progress</span>
+              <span>
+                {course.enrollment.completed_lessons?.length || 0} / {course.lessons?.length || 0} lessons
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                style={{ 
+                  width: `${course.lessons?.length > 0 
+                    ? ((course.enrollment.completed_lessons?.length || 0) / course.lessons.length) * 100 
+                    : 0}%` 
+                }}
+               />
+            </div>
+          </div>
+        )}
         
         <div className="flex gap-2">
           {course.is_enrolled ? (
@@ -56,10 +78,10 @@ const CourseCard = ({ course, onEnroll }) => {
           ) : (
             <button
               onClick={handleEnroll}
-              disabled={enrolling}
+              disabled={localEnrolling || isEnrolling}
               className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
             >
-              {enrolling ? 'Enrolling...' : 'Enroll Now'}
+              {(localEnrolling || isEnrolling) ? 'Enrolling...' : 'Enroll Now'}
             </button>
           )}
           

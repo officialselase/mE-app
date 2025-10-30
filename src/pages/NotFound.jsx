@@ -13,7 +13,7 @@ const NotFound = () => {
             "url('https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif')",
         }}
       >
-        <h1 className="absolute inset-0 flex items-center justify-center text-8xl font-bold text-black">
+        <h1 className="absolute inset-0 flex items-center justify-center text-8xl font-bold text-black drop-shadow-lg">
           404
         </h1>
       </div>

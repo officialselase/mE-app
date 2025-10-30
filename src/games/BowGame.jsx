@@ -10,7 +10,7 @@ const BowGame = () => {
     let isDrawing = false;
 
     const draw = () => {
-      if (!isDrawing) return;
+      if (!isDrawing) {return;}
       const arrow = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "line"

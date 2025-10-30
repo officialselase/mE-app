@@ -24,13 +24,13 @@ vi.mock('../../components/VideoPlayer', () => ({
 // Mock CoursesList component
 vi.mock('../../components/CoursesList', () => ({
   default: ({ courses, loading, error, onEnroll, onRetry }) => {
-    if (loading) return <div data-testid="courses-loading">Loading courses...</div>;
-    if (error) return (
+    if (loading) {return <div data-testid="courses-loading">Loading courses...</div>;}
+    if (error) {return (
       <div data-testid="courses-error">
         <span>Error: {error}</span>
         <button onClick={onRetry}>Retry</button>
       </div>
-    );
+    );}
     return (
       <div data-testid="courses-list">
         {courses.map(course => (

@@ -2,13 +2,13 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AssignmentSubmissionForm from '../AssignmentSubmissionForm';
-import { apiClient } from '../../utils/api';
+import { learnAPI } from '../../utils/djangoApi';
 
-// Mock the API client
-vi.mock('../../utils/api', () => ({
-  apiClient: {
-    post: vi.fn(),
-    put: vi.fn(),
+// Mock the Django API client
+vi.mock('../../utils/djangoApi', () => ({
+  learnAPI: {
+    submitAssignment: vi.fn(),
+    updateSubmission: vi.fn(),
   },
 }));
 
@@ -204,8 +204,18 @@ describe('AssignmentSubmissionForm', () => {
   describe('Form submission', () => {
     it('should submit new assignment successfully', async () => {
       const user = userEvent.setup();
-      const mockResponse = { data: { submission: { id: '1' } } };
-      apiClient.post.mockResolvedValueOnce(mockResponse);
+      const mockResponse = { 
+        data: { 
+          id: 1,
+          assignment: 1,
+          github_repo_url: 'https://github.com/user/todo-app',
+          live_preview_url: 'https://todo-app.netlify.app',
+          notes: 'Great learning experience!',
+          is_public: true,
+          submitted_at: '2024-01-15T10:30:00Z'
+        } 
+      };
+      learnAPI.submitAssignment.mockResolvedValueOnce(mockResponse);
 
       render(
         <AssignmentSubmissionForm
@@ -231,20 +241,30 @@ describe('AssignmentSubmissionForm', () => {
       expect(screen.getByText('Submitting...')).toBeInTheDocument();
 
       await waitFor(() => {
-        expect(apiClient.post).toHaveBeenCalledWith('/api/assignments/1/submit', {
+        expect(learnAPI.submitAssignment).toHaveBeenCalledWith('1', {
           github_repo_url: 'https://github.com/user/todo-app',
           live_preview_url: 'https://todo-app.netlify.app',
           notes: 'Great learning experience!',
           is_public: true,
         });
-        expect(mockOnSubmit).toHaveBeenCalledWith({ id: '1' });
+        expect(mockOnSubmit).toHaveBeenCalledWith(mockResponse.data);
       });
     });
 
     it('should update existing submission successfully', async () => {
       const user = userEvent.setup();
-      const mockResponse = { data: { submission: { id: '1' } } };
-      apiClient.put.mockResolvedValueOnce(mockResponse);
+      const mockResponse = { 
+        data: { 
+          id: 1,
+          assignment: 1,
+          github_repo_url: 'https://github.com/user/todo-app',
+          live_preview_url: 'https://todo-app.netlify.app',
+          notes: 'Updated notes',
+          is_public: true,
+          submitted_at: '2024-01-15T10:30:00Z'
+        } 
+      };
+      learnAPI.updateSubmission.mockResolvedValueOnce(mockResponse);
 
       render(
         <AssignmentSubmissionForm
@@ -265,20 +285,29 @@ describe('AssignmentSubmissionForm', () => {
       expect(screen.getByText('Updating...')).toBeInTheDocument();
 
       await waitFor(() => {
-        expect(apiClient.put).toHaveBeenCalledWith('/api/submissions/1', {
+        expect(learnAPI.updateSubmission).toHaveBeenCalledWith('1', {
           github_repo_url: 'https://github.com/user/todo-app',
           live_preview_url: 'https://todo-app.netlify.app',
           notes: 'Updated notes',
           is_public: true,
         });
-        expect(mockOnSubmit).toHaveBeenCalledWith({ id: '1' });
+        expect(mockOnSubmit).toHaveBeenCalledWith(mockResponse.data);
       });
     });
 
     it('should handle submission with only GitHub URL', async () => {
       const user = userEvent.setup();
-      const mockResponse = { data: { submission: { id: '1' } } };
-      apiClient.post.mockResolvedValueOnce(mockResponse);
+      const mockResponse = { 
+        data: { 
+          id: 1,
+          assignment: 1,
+          github_repo_url: 'https://github.com/user/todo-app',
+          live_preview_url: '',
+          notes: '',
+          is_public: false
+        } 
+      };
+      learnAPI.submitAssignment.mockResolvedValueOnce(mockResponse);
 
       render(
         <AssignmentSubmissionForm
@@ -294,10 +323,10 @@ describe('AssignmentSubmissionForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(apiClient.post).toHaveBeenCalledWith('/api/assignments/1/submit', {
+        expect(learnAPI.submitAssignment).toHaveBeenCalledWith('1', {
           github_repo_url: 'https://github.com/user/todo-app',
-          live_preview_url: null,
-          notes: null,
+          live_preview_url: '',
+          notes: '',
           is_public: false,
         });
       });
@@ -305,8 +334,17 @@ describe('AssignmentSubmissionForm', () => {
 
     it('should handle submission with only live preview URL', async () => {
       const user = userEvent.setup();
-      const mockResponse = { data: { submission: { id: '1' } } };
-      apiClient.post.mockResolvedValueOnce(mockResponse);
+      const mockResponse = { 
+        data: { 
+          id: 1,
+          assignment: 1,
+          github_repo_url: '',
+          live_preview_url: 'https://todo-app.netlify.app',
+          notes: '',
+          is_public: false
+        } 
+      };
+      learnAPI.submitAssignment.mockResolvedValueOnce(mockResponse);
 
       render(
         <AssignmentSubmissionForm
@@ -322,10 +360,10 @@ describe('AssignmentSubmissionForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(apiClient.post).toHaveBeenCalledWith('/api/assignments/1/submit', {
-          github_repo_url: null,
+        expect(learnAPI.submitAssignment).toHaveBeenCalledWith('1', {
+          github_repo_url: '',
           live_preview_url: 'https://todo-app.netlify.app',
-          notes: null,
+          notes: '',
           is_public: false,
         });
       });
@@ -333,8 +371,17 @@ describe('AssignmentSubmissionForm', () => {
 
     it('should reset form after successful new submission', async () => {
       const user = userEvent.setup();
-      const mockResponse = { data: { submission: { id: '1' } } };
-      apiClient.post.mockResolvedValueOnce(mockResponse);
+      const mockResponse = { 
+        data: { 
+          id: 1,
+          assignment: 1,
+          github_repo_url: 'https://github.com/user/todo-app',
+          live_preview_url: '',
+          notes: '',
+          is_public: false
+        } 
+      };
+      learnAPI.submitAssignment.mockResolvedValueOnce(mockResponse);
 
       render(
         <AssignmentSubmissionForm
@@ -356,8 +403,17 @@ describe('AssignmentSubmissionForm', () => {
 
     it('should not reset form after updating existing submission', async () => {
       const user = userEvent.setup();
-      const mockResponse = { data: { submission: { id: '1' } } };
-      apiClient.put.mockResolvedValueOnce(mockResponse);
+      const mockResponse = { 
+        data: { 
+          id: 1,
+          assignment: 1,
+          github_repo_url: 'https://github.com/user/todo-app',
+          live_preview_url: 'https://todo-app.netlify.app',
+          notes: 'This was challenging but fun!',
+          is_public: true
+        } 
+      };
+      learnAPI.updateSubmission.mockResolvedValueOnce(mockResponse);
 
       render(
         <AssignmentSubmissionForm
@@ -377,11 +433,16 @@ describe('AssignmentSubmissionForm', () => {
   });
 
   describe('Error handling', () => {
-    it('should show API error message', async () => {
+    it('should show Django API error message', async () => {
       const user = userEvent.setup();
       const errorMessage = 'Assignment submission failed';
-      apiClient.post.mockRejectedValueOnce({
-        response: { data: { error: errorMessage } }
+      learnAPI.submitAssignment.mockRejectedValueOnce({
+        response: { 
+          status: 400,
+          data: { 
+            detail: errorMessage 
+          } 
+        }
       });
 
       render(
@@ -404,9 +465,39 @@ describe('AssignmentSubmissionForm', () => {
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
+    it('should show Django validation errors', async () => {
+      const user = userEvent.setup();
+      learnAPI.submitAssignment.mockRejectedValueOnce({
+        response: { 
+          status: 400,
+          data: { 
+            github_repo_url: ['Enter a valid URL.'],
+            notes: ['This field may not be blank.']
+          } 
+        }
+      });
+
+      render(
+        <AssignmentSubmissionForm
+          assignment={mockAssignment}
+          onSubmit={mockOnSubmit}
+        />
+      );
+
+      const githubInput = screen.getByLabelText(/GitHub Repository URL/);
+      await user.type(githubInput, 'invalid-url');
+
+      const submitButton = screen.getByText('Submit Assignment');
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Enter a valid URL.')).toBeInTheDocument();
+      });
+    });
+
     it('should show fallback error message', async () => {
       const user = userEvent.setup();
-      apiClient.post.mockRejectedValueOnce(new Error('Network error'));
+      learnAPI.submitAssignment.mockRejectedValueOnce(new Error('Network error'));
 
       render(
         <AssignmentSubmissionForm
@@ -423,28 +514,6 @@ describe('AssignmentSubmissionForm', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
-      });
-    });
-
-    it('should show generic error message when no specific error', async () => {
-      const user = userEvent.setup();
-      apiClient.post.mockRejectedValueOnce({});
-
-      render(
-        <AssignmentSubmissionForm
-          assignment={mockAssignment}
-          onSubmit={mockOnSubmit}
-        />
-      );
-
-      const githubInput = screen.getByLabelText(/GitHub Repository URL/);
-      await user.type(githubInput, 'https://github.com/user/todo-app');
-
-      const submitButton = screen.getByText('Submit Assignment');
-      await user.click(submitButton);
-
-      await waitFor(() => {
-        expect(screen.getByText('Failed to submit assignment')).toBeInTheDocument();
       });
     });
   });

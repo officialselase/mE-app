@@ -10,20 +10,19 @@ building technology that empowers others. It also emphasizes creativity,
 community, and mentorship as central to his journey.
 `;
 
-const About = ({ setCurrentPage, currentPage }) => {
-  const dummyImageUrl = "src/assets/react.svg"; // Original dummy image URL
+const About = ({ setCurrentPage }) => {
   return (
     <>
       <MetaTags
-        title="About - Ransford Antwi"
-        description="Learn about Ransford Antwi, a passionate full stack developer from Ghana. Discover his journey, philosophy of fair work, and commitment to building technology that empowers others."
-        keywords="Ransford Antwi, about, Ghana, full stack developer, software engineer, biography, philosophy"
+        title="About - Selase K. Agbai"
+        description="Learn about Selaase K, a passionate full stack developer from Ghana. Discover his journey, philosophy of fair work, and commitment to building technology that empowers others."
+        keywords="Selase K, about, Ghana, full stack developer, software engineer, biography, philosophy"
         url={`${window.location.origin}/about`}
       />
       <StructuredData data={createPersonSchema()} />
       <div className="min-h-screen font-sans antialiased">
       <div className="w-full max-w-screen-xl mx-auto py-10 px-4 sm:px-6 md:px-8 flex flex-col ">
-        <h1 className="sr-only">About Ransford Antwi - Full Stack Developer</h1>
+        <h1 className="sr-only">About Sels - Full Stack Developer</h1>
         {/* Top Section */}
         <div className="flex flex-col md:flex-row justify-center items-center mb-16 md:space-x-6">
           {/* Left Side */}

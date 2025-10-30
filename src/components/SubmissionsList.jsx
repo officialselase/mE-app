@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { apiClient } from '../utils/api';
+import { learnAPI, handleDjangoError } from '../utils/djangoApi';
 
 const SubmissionsList = ({ assignmentId, submissions, currentUserId, onComment, refreshSubmissions }) => {
   const { user } = useAuth();
@@ -13,10 +13,10 @@ const SubmissionsList = ({ assignmentId, submissions, currentUserId, onComment, 
   const fetchComments = useCallback(async (submissionId) => {
     try {
       setLoadingComments(prev => ({ ...prev, [submissionId]: true }));
-      const response = await apiClient.get(`/api/submissions/${submissionId}/comments`);
+      const response = await learnAPI.getComments(submissionId);
       setComments(prev => ({
         ...prev,
-        [submissionId]: response.data.comments || []
+        [submissionId]: response.data.results || response.data
       }));
     } catch (err) {
       console.error('Error fetching comments:', err);
@@ -28,19 +28,19 @@ const SubmissionsList = ({ assignmentId, submissions, currentUserId, onComment, 
   // Submit a new comment
   const handleSubmitComment = useCallback(async (submissionId) => {
     const commentText = newComments[submissionId]?.trim();
-    if (!commentText) return;
+    if (!commentText) {return;}
 
     try {
       setSubmittingComments(prev => ({ ...prev, [submissionId]: true }));
       
-      const response = await apiClient.post(`/api/submissions/${submissionId}/comments`, {
+      const response = await learnAPI.addComment(submissionId, {
         content: commentText
       });
       
       // Add the new comment to the local state
       setComments(prev => ({
         ...prev,
-        [submissionId]: [...(prev[submissionId] || []), response.data.comment]
+        [submissionId]: [...(prev[submissionId] || []), response.data]
       }));
       
       // Clear the input
@@ -50,11 +50,14 @@ const SubmissionsList = ({ assignmentId, submissions, currentUserId, onComment, 
       }));
       
       if (onComment) {
-        onComment(submissionId, response.data.comment);
+        onComment(submissionId, response.data);
       }
       
     } catch (err) {
       console.error('Error submitting comment:', err);
+      const djangoError = handleDjangoError(err);
+      // You might want to show an error message to the user
+      console.error('Django error:', djangoError.message);
     } finally {
       setSubmittingComments(prev => ({ ...prev, [submissionId]: false }));
     }
@@ -110,7 +113,7 @@ const SubmissionsList = ({ assignmentId, submissions, currentUserId, onComment, 
 
       <div className="space-y-4">
         {submissions.map((submission) => {
-          const isCurrentUser = user && submission.student_id === user.id;
+          const isCurrentUser = user && submission.student === user.id;
           const submissionComments = comments[submission.id] || [];
           const isLoadingComments = loadingComments[submission.id];
           const isSubmittingComment = submittingComments[submission.id];

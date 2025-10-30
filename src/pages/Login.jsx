@@ -90,124 +90,166 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to access your account</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+      {/* Navigation Header */}
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm py-4 px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link to="/" className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+            mE-app
+          </Link>
+          <nav className="flex space-x-6">
+            <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Home
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              About
+            </Link>
+            <Link to="/projects" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Projects
+            </Link>
+            <Link to="/thoughts" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Thoughts
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-          {/* Animated Bear */}
-          <AnimatedBear
-            isPasswordFocused={isPasswordFocused}
-            isEmailFocused={isEmailFocused}
-            authState={authState}
-          />
-
-          {/* Error Message */}
-          {error && (
-            <div 
-              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-              role="alert"
-              aria-live="polite"
-            >
-              {error}
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+              <p className="text-gray-600">Sign in to access your account</p>
             </div>
-          )}
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Email Field */}
-            <div className="mb-4">
-              <label 
-                htmlFor="email" 
-                className="block text-sm font-medium text-gray-700 mb-2"
+            {/* Animated Bear */}
+            <AnimatedBear
+              isPasswordFocused={isPasswordFocused}
+              isEmailFocused={isEmailFocused}
+              authState={authState}
+            />
+
+            {/* Error Message */}
+            {error && (
+              <div 
+                className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                role="alert"
+                aria-live="polite"
               >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                  setError('');
-                }}
-                onFocus={() => setIsEmailFocused(true)}
-                onBlur={() => {
-                  setIsEmailFocused(false);
-                  const err = validateEmail(email);
-                  setEmailError(err);
-                }}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
-                  emailError ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="you@example.com"
-                disabled={isLoading}
-                aria-invalid={emailError ? 'true' : 'false'}
-                aria-describedby={emailError ? 'email-error' : undefined}
-              />
-              {emailError && (
-                <p 
-                  id="email-error" 
-                  className="mt-1 text-sm text-red-600"
-                  role="alert"
+                {error}
+              </div>
+            )}
+
+            {/* Login Form */}
+            <form onSubmit={handleSubmit} noValidate>
+              {/* Email Field */}
+              <div className="mb-4">
+                <label 
+                  htmlFor="email" 
+                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  {emailError}
-                </p>
-              )}
-            </div>
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError('');
+                    setError('');
+                  }}
+                  onFocus={() => setIsEmailFocused(true)}
+                  onBlur={() => {
+                    setIsEmailFocused(false);
+                    const err = validateEmail(email);
+                    setEmailError(err);
+                  }}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                    emailError ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="you@example.com"
+                  disabled={isLoading}
+                  aria-invalid={emailError ? 'true' : 'false'}
+                  aria-describedby={emailError ? 'email-error' : undefined}
+                />
+                {emailError && (
+                  <p 
+                    id="email-error" 
+                    className="mt-1 text-sm text-red-600"
+                    role="alert"
+                  >
+                    {emailError}
+                  </p>
+                )}
+              </div>
 
-            {/* Password Field */}
-            <div className="mb-6">
-              <PasswordInput
-                id="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError('');
-                  setError('');
-                }}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => {
-                  setIsPasswordFocused(false);
-                  const err = validatePassword(password);
-                  setPasswordError(err);
-                }}
-                error={passwordError}
+              {/* Password Field */}
+              <div className="mb-6">
+                <PasswordInput
+                  id="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordError('');
+                    setError('');
+                  }}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => {
+                    setIsPasswordFocused(false);
+                    const err = validatePassword(password);
+                    setPasswordError(err);
+                  }}
+                  error={passwordError}
+                  disabled={isLoading}
+                  label="Password"
+                  required
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
                 disabled={isLoading}
-                label="Password"
-                required
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
-
-          {/* Register Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link 
-                to="/register" 
-                className="text-blue-600 hover:text-blue-700 font-medium focus:outline-none focus:underline"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Create one
-              </Link>
-            </p>
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+
+            {/* Register Link */}
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{' '}
+                <Link 
+                  to="/register" 
+                  className="text-blue-600 hover:text-blue-700 font-medium focus:outline-none focus:underline"
+                >
+                  Create one
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer Navigation */}
+      <footer className="bg-white/80 backdrop-blur-sm shadow-sm py-4 px-6 mt-auto">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-gray-600 text-sm">
+            Explore more: 
+            <Link to="/work" className="ml-2 text-blue-600 hover:text-blue-700 font-medium">
+              Work
+            </Link>
+            |
+            <Link to="/shop" className="ml-2 text-blue-600 hover:text-blue-700 font-medium">
+              Shop
+            </Link>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

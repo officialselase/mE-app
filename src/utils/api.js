@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3010',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -12,8 +12,8 @@ const api = axios.create({
 // Request interceptor for authentication tokens
 api.interceptors.request.use(
   (config) => {
-    // Get token from localStorage
-    const token = localStorage.getItem('token');
+    // Get token from localStorage (match AuthContext naming)
+    const token = localStorage.getItem('accessToken');
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -44,12 +44,12 @@ api.interceptors.response.use(
         
         if (refreshToken) {
           const response = await axios.post(
-            `${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/api/auth/refresh`,
+            `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth/refresh`,
             { refreshToken }
           );
 
-          const { token: newToken } = response.data;
-          localStorage.setItem('token', newToken);
+          const { accessToken: newToken } = response.data;
+          localStorage.setItem('accessToken', newToken);
 
           // Retry the original request with new token
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
@@ -57,7 +57,7 @@ api.interceptors.response.use(
         }
       } catch (refreshError) {
         // If refresh fails, clear tokens and redirect to login
-        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);

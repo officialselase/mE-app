@@ -1,12 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { AuthProvider, useAuth } from '../AuthContext';
+import { authAPI } from '../../utils/djangoApi';
 
-describe('AuthContext', () => {
+// Mock Django API
+vi.mock('../../utils/djangoApi', () => ({
+  authAPI: {
+    login: vi.fn(),
+    register: vi.fn(),
+    logout: vi.fn(),
+    getCurrentUser: vi.fn(),
+    refreshToken: vi.fn(),
+  },
+}));
+
+describe('AuthContext - Django Integration', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
-    global.fetch = vi.fn();
   });
 
   describe('useAuth hook', () => {
@@ -38,9 +49,8 @@ describe('AuthContext', () => {
 
   describe('Initial state', () => {
     it('should start with null user and not authenticated', async () => {
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
-        status: 401,
+      authAPI.getCurrentUser.mockRejectedValueOnce({
+        response: { status: 401 }
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -56,12 +66,11 @@ describe('AuthContext', () => {
     });
 
     it('should check for existing token on mount', async () => {
-      const mockUser = { id: '1', email: 'test@example.com', displayName: 'Test User' };
-      localStorage.setItem('accessToken', 'mock-token');
+      const mockUser = { id: 1, email: 'test@example.com', display_name: 'Test User' };
+      localStorage.setItem('access_token', 'mock-token');
 
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ user: mockUser }),
+      authAPI.getCurrentUser.mockResolvedValueOnce({
+        data: mockUser,
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -74,30 +83,22 @@ describe('AuthContext', () => {
 
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/auth/me'),
-        expect.objectContaining({
-          headers: {
-            'Authorization': 'Bearer mock-token'
-          }
-        })
-      );
+      expect(authAPI.getCurrentUser).toHaveBeenCalled();
     });
   });
 
   describe('login function', () => {
     it('should successfully login with valid credentials', async () => {
-      const mockUser = { id: '1', email: 'test@example.com', displayName: 'Test User' };
+      const mockUser = { id: 1, email: 'test@example.com', display_name: 'Test User' };
       const mockResponse = {
-        user: mockUser,
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
+        data: {
+          user: mockUser,
+          access_token: 'access-token',
+          refresh_token: 'refresh-token',
+        }
       };
 
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResponse,
-      });
+      authAPI.login.mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: AuthProvider,
@@ -115,14 +116,19 @@ describe('AuthContext', () => {
       expect(loginResult).toEqual(mockUser);
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
-      expect(localStorage.getItem('accessToken')).toBe('access-token');
-      expect(localStorage.getItem('refreshToken')).toBe('refresh-token');
+      expect(localStorage.getItem('access_token')).toBe('access-token');
+      expect(localStorage.getItem('refresh_token')).toBe('refresh-token');
+      expect(authAPI.login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123'
+      });
     });
 
     it('should throw error on failed login', async () => {
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Invalid credentials' }),
+      authAPI.login.mockRejectedValueOnce({
+        response: {
+          data: { message: 'Invalid credentials' }
+        }
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -144,7 +150,7 @@ describe('AuthContext', () => {
     });
 
     it('should handle network errors during login', async () => {
-      global.fetch.mockRejectedValueOnce(new Error('Network error'));
+      authAPI.login.mockRejectedValueOnce(new Error('Network error'));
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: AuthProvider,
@@ -164,17 +170,16 @@ describe('AuthContext', () => {
 
   describe('register function', () => {
     it('should successfully register a new user', async () => {
-      const mockUser = { id: '1', email: 'new@example.com', displayName: 'New User' };
+      const mockUser = { id: 1, email: 'new@example.com', display_name: 'New User' };
       const mockResponse = {
-        user: mockUser,
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
+        data: {
+          user: mockUser,
+          access_token: 'access-token',
+          refresh_token: 'refresh-token',
+        }
       };
 
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResponse,
-      });
+      authAPI.register.mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: AuthProvider,
@@ -192,14 +197,20 @@ describe('AuthContext', () => {
       expect(registerResult).toEqual(mockUser);
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
-      expect(localStorage.getItem('accessToken')).toBe('access-token');
-      expect(localStorage.getItem('refreshToken')).toBe('refresh-token');
+      expect(localStorage.getItem('access_token')).toBe('access-token');
+      expect(localStorage.getItem('refresh_token')).toBe('refresh-token');
+      expect(authAPI.register).toHaveBeenCalledWith({
+        email: 'new@example.com',
+        password: 'password123',
+        display_name: 'New User'
+      });
     });
 
     it('should throw error on failed registration', async () => {
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Email already exists' }),
+      authAPI.register.mockRejectedValueOnce({
+        response: {
+          data: { message: 'Email already exists' }
+        }
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -223,14 +234,13 @@ describe('AuthContext', () => {
 
   describe('logout function', () => {
     it('should successfully logout and clear state', async () => {
-      const mockUser = { id: '1', email: 'test@example.com', displayName: 'Test User' };
-      localStorage.setItem('accessToken', 'access-token');
-      localStorage.setItem('refreshToken', 'refresh-token');
+      const mockUser = { id: 1, email: 'test@example.com', display_name: 'Test User' };
+      localStorage.setItem('access_token', 'access-token');
+      localStorage.setItem('refresh_token', 'refresh-token');
 
       // Mock initial auth check
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ user: mockUser }),
+      authAPI.getCurrentUser.mockResolvedValueOnce({
+        data: mockUser
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -242,8 +252,8 @@ describe('AuthContext', () => {
       });
 
       // Mock logout API call
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
+      authAPI.logout.mockResolvedValueOnce({
+        data: { message: 'Logged out successfully' }
       });
 
       await act(async () => {
@@ -252,19 +262,19 @@ describe('AuthContext', () => {
 
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
-      expect(localStorage.getItem('accessToken')).toBeNull();
-      expect(localStorage.getItem('refreshToken')).toBeNull();
+      expect(localStorage.getItem('access_token')).toBeNull();
+      expect(localStorage.getItem('refresh_token')).toBeNull();
+      expect(authAPI.logout).toHaveBeenCalled();
     });
 
     it('should clear state even if logout API call fails', async () => {
-      const mockUser = { id: '1', email: 'test@example.com', displayName: 'Test User' };
-      localStorage.setItem('accessToken', 'access-token');
-      localStorage.setItem('refreshToken', 'refresh-token');
+      const mockUser = { id: 1, email: 'test@example.com', display_name: 'Test User' };
+      localStorage.setItem('access_token', 'access-token');
+      localStorage.setItem('refresh_token', 'refresh-token');
 
       // Mock initial auth check
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ user: mockUser }),
+      authAPI.getCurrentUser.mockResolvedValueOnce({
+        data: mockUser
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -276,7 +286,7 @@ describe('AuthContext', () => {
       });
 
       // Mock failed logout API call
-      global.fetch.mockRejectedValueOnce(new Error('Network error'));
+      authAPI.logout.mockRejectedValueOnce(new Error('Network error'));
 
       await act(async () => {
         await result.current.logout();
@@ -284,22 +294,24 @@ describe('AuthContext', () => {
 
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
-      expect(localStorage.getItem('accessToken')).toBeNull();
-      expect(localStorage.getItem('refreshToken')).toBeNull();
+      expect(localStorage.getItem('access_token')).toBeNull();
+      expect(localStorage.getItem('refresh_token')).toBeNull();
     });
   });
 
   describe('refreshToken function', () => {
     it('should successfully refresh token', async () => {
-      const mockUser = { id: '1', email: 'test@example.com', displayName: 'Test User' };
-      localStorage.setItem('refreshToken', 'refresh-token');
+      const mockUser = { id: 1, email: 'test@example.com', display_name: 'Test User' };
+      localStorage.setItem('refresh_token', 'refresh-token');
 
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          accessToken: 'new-access-token',
-          user: mockUser,
-        }),
+      authAPI.refreshToken.mockResolvedValueOnce({
+        data: {
+          access: 'new-access-token',
+        }
+      });
+
+      authAPI.getCurrentUser.mockResolvedValueOnce({
+        data: mockUser
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -318,14 +330,15 @@ describe('AuthContext', () => {
       expect(refreshResult).toBe(true);
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
-      expect(localStorage.getItem('accessToken')).toBe('new-access-token');
+      expect(localStorage.getItem('access_token')).toBe('new-access-token');
+      expect(authAPI.refreshToken).toHaveBeenCalledWith('refresh-token');
     });
 
     it('should clear tokens on failed refresh', async () => {
-      localStorage.setItem('refreshToken', 'invalid-token');
+      localStorage.setItem('refresh_token', 'invalid-token');
 
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
+      authAPI.refreshToken.mockRejectedValueOnce({
+        response: { status: 401 }
       });
 
       const { result } = renderHook(() => useAuth(), {
@@ -344,8 +357,8 @@ describe('AuthContext', () => {
       expect(refreshResult).toBe(false);
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
-      expect(localStorage.getItem('accessToken')).toBeNull();
-      expect(localStorage.getItem('refreshToken')).toBeNull();
+      expect(localStorage.getItem('access_token')).toBeNull();
+      expect(localStorage.getItem('refresh_token')).toBeNull();
     });
   });
 });

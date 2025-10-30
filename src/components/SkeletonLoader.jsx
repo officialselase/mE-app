@@ -20,16 +20,16 @@ const SkeletonLoader = memo(({ variant = 'card', count = 1 }) => {
             aria-label="Loading content"
           >
             <div className="p-6">
-              <div className="h-6 bg-gray-300 rounded w-3/4 mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
+              <div className="h-6 bg-gray-300 rounded w-3/4 mb-4" />
+              <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+              <div className="h-4 bg-gray-200 rounded w-5/6 mb-4" />
               <div className="flex justify-between items-center mb-4">
-                <div className="h-3 bg-gray-200 rounded w-1/3"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/3" />
+                <div className="h-3 bg-gray-200 rounded w-1/4" />
               </div>
               <div className="flex gap-2">
-                <div className="h-10 bg-gray-300 rounded flex-1"></div>
-                <div className="h-10 bg-gray-200 rounded w-24"></div>
+                <div className="h-10 bg-gray-300 rounded flex-1" />
+                <div className="h-10 bg-gray-200 rounded w-24" />
               </div>
             </div>
           </div>
@@ -43,8 +43,8 @@ const SkeletonLoader = memo(({ variant = 'card', count = 1 }) => {
             role="status"
             aria-label="Loading content"
           >
-            <div className="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded w-full"></div>
+            <div className="h-4 bg-gray-300 rounded w-2/3 mb-2" />
+            <div className="h-3 bg-gray-200 rounded w-full" />
           </div>
         ));
 
@@ -56,7 +56,7 @@ const SkeletonLoader = memo(({ variant = 'card', count = 1 }) => {
             role="status"
             aria-label="Loading content"
           >
-            <div className="h-3 bg-gray-200 rounded w-full"></div>
+            <div className="h-3 bg-gray-200 rounded w-full" />
           </div>
         ));
 

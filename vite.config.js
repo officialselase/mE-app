@@ -29,9 +29,9 @@ export default defineConfig({
         manualChunks: {
           // Separate vendor chunks for better caching
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
           ui: ['lucide-react', '@tanstack/react-query'],
           auth: ['axios'],
+          ai: ['@google/generative-ai'],
         },
         // Optimize chunk file names for better caching
         chunkFileNames: 'assets/[name]-[hash].js',
@@ -40,6 +40,10 @@ export default defineConfig({
       },
     },
     // Set chunk size warning limit
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500,
+    // Enable minification
+    minify: 'esbuild',
+    // Optimize CSS
+    cssMinify: true,
   },
 });

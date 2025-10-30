@@ -1,19 +1,19 @@
 import { Helmet } from "react-helmet-async";
 
 const MetaTags = ({
-  title = "Ransford Antwi - Full Stack Developer & Software Engineer",
+  title = "Selase K. - Full Stack Developer & Software Engineer",
   description = "Experienced full stack developer specializing in React, Node.js, and modern web technologies. View my portfolio, projects, and thoughts on software development.",
   keywords = "full stack developer, software engineer, React, Node.js, JavaScript, web development, portfolio",
   image = `${window.location.origin}/IMG-20230125-WA0001.jpg`,
   url = window.location.href,
   type = "website",
-  author = "Ransford Antwi",
-  twitterHandle = "@ransfordantwi"
+  author = "Selase K.",
+  twitterHandle = "@Sels_Officialgh"
 }) => {
   // Ensure title includes site name if not already present
-  const fullTitle = title.includes("Ransford Antwi") 
+  const fullTitle = title.includes("Selase K.") 
     ? title 
-    : `${title} | Ransford Antwi`;
+    : `${title} | Selase K.`;
 
   return (
     <Helmet>
@@ -33,7 +33,7 @@ const MetaTags = ({
       <meta property="og:image" content={image} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content="Ransford Antwi Portfolio" />
+      <meta property="og:site_name" content="Selase K. Portfolio" />
       <meta property="og:locale" content="en_US" />
 
       {/* Twitter Card Tags */}
@@ -47,7 +47,7 @@ const MetaTags = ({
       {/* Additional Meta Tags */}
       <meta name="theme-color" content="#1f2937" />
       <meta name="msapplication-TileColor" content="#1f2937" />
-      <meta name="application-name" content="Ransford Antwi Portfolio" />
+      <meta name="application-name" content="Selase K. Portfolio" />
     </Helmet>
   );
 };

@@ -1,6 +1,19 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { authAPI, handleDjangoError } from '../utils/djangoApi';
+import TokenManager from '../utils/tokenManager';
 
-const AuthContext = createContext(null);
+// Create context with default values to prevent null context errors
+const defaultAuthContext = {
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  login: async () => {},
+  register: async () => {},
+  logout: async () => {},
+  refreshToken: async () => false
+};
+
+const AuthContext = createContext(defaultAuthContext);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -15,184 +28,175 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Get API URL from environment variable
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
   // Check if user is authenticated on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
       try {
-        const response = await fetch(`${API_URL}/api/auth/me`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        // Initialize token manager
+        TokenManager.initialize();
+        
+        // Check if we have valid tokens
+        if (!TokenManager.hasValidTokens()) {
+          setIsLoading(false);
+          return;
+        }
 
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData.user);
+        // Try to get current user from Django API
+        const response = await authAPI.getCurrentUser();
+        
+        if (response.data) {
+          setUser(response.data);
           setIsAuthenticated(true);
-        } else {
-          // Token is invalid, try to refresh
-          await refreshToken();
         }
       } catch (error) {
         console.error('Auth check failed:', error);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        
+        // If auth check fails, clear tokens and reset state
+        TokenManager.clearTokens();
+        setUser(null);
+        setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAuth();
-  }, [API_URL]);
+  }, []);
 
-  // Refresh token function
-  const refreshToken = useCallback(async () => {
-    const refresh = localStorage.getItem('refreshToken');
-    if (!refresh) {
-      setIsLoading(false);
-      return false;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/api/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ refreshToken: refresh })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('accessToken', data.accessToken);
-        setUser(data.user);
-        setIsAuthenticated(true);
-        return true;
-      } else {
-        // Refresh failed, clear tokens
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        setUser(null);
-        setIsAuthenticated(false);
-        return false;
-      }
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      setUser(null);
-      setIsAuthenticated(false);
-      return false;
-    }
-  }, [API_URL]);
-
-  // Set up automatic token refresh
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    // Refresh token every 14 minutes (tokens expire in 15 minutes)
-    const interval = setInterval(() => {
-      refreshToken();
-    }, 14 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [isAuthenticated, refreshToken]);
-
-  // Login function
+  // Login function using Django API
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      });
+      const response = await authAPI.login({ email, password });
+      const { access_token, refresh_token, expires_in, user: userData } = response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+      if (!access_token || !refresh_token) {
+        throw new Error('Invalid response from login endpoint');
       }
 
-      // Store tokens
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      // Store tokens using TokenManager with expiry info
+      TokenManager.setTokens(access_token, refresh_token, expires_in);
 
       // Set user state
-      setUser(data.user);
+      setUser(userData);
       setIsAuthenticated(true);
 
-      return data.user;
+      return userData;
     } catch (error) {
       console.error('Login error:', error);
-      throw error;
+      
+      // Handle Django-specific errors
+      const djangoError = handleDjangoError(error);
+      
+      if (djangoError.type === 'validation' && djangoError.errors) {
+        // Handle field-specific validation errors
+        const errorMessage = Object.values(djangoError.errors)[0] || 'Login failed';
+        throw new Error(errorMessage);
+      } else {
+        throw new Error(djangoError.message || 'Login failed');
+      }
     }
   };
 
-  // Register function
+  // Register function using Django API
   const register = async (email, password, displayName) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password, displayName })
+      // First, register the user
+      await authAPI.register({ 
+        email, 
+        password, 
+        displayName 
       });
+      
+      // Registration successful, now log them in to get tokens
+      const loginResponse = await authAPI.login({ email, password });
+      const { access_token, refresh_token, expires_in, user: userData } = loginResponse.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+      if (!access_token || !refresh_token) {
+        throw new Error('Invalid response from login after registration');
       }
 
-      // Store tokens
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      // Store tokens using TokenManager with expiry info
+      TokenManager.setTokens(access_token, refresh_token, expires_in);
 
       // Set user state
-      setUser(data.user);
+      setUser(userData);
       setIsAuthenticated(true);
 
-      return data.user;
+      return userData;
     } catch (error) {
       console.error('Registration error:', error);
-      throw error;
+      
+      // Handle Django-specific errors
+      const djangoError = handleDjangoError(error);
+      
+      if (djangoError.type === 'validation' && djangoError.errors) {
+        // Handle field-specific validation errors
+        const errorMessages = Object.entries(djangoError.errors)
+          .map(([field, message]) => `${field}: ${message}`)
+          .join(', ');
+        throw new Error(errorMessages);
+      } else {
+        throw new Error(djangoError.message || 'Registration failed');
+      }
     }
   };
 
-  // Logout function
+  // Logout function using Django API
   const logout = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        await fetch(`${API_URL}/api/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+      // Call Django logout endpoint if we have a token
+      if (TokenManager.hasValidTokens()) {
+        await authAPI.logout();
       }
     } catch (error) {
       console.error('Logout error:', error);
+      // Continue with logout even if API call fails
     } finally {
       // Clear tokens and state regardless of API call result
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      TokenManager.clearTokens();
       setUser(null);
       setIsAuthenticated(false);
     }
   };
+
+  // Refresh token function
+  const refreshToken = useCallback(async () => {
+    try {
+      const newAccessToken = await TokenManager.refreshAccessToken();
+      
+      if (newAccessToken) {
+        // Get updated user data
+        const response = await authAPI.getCurrentUser();
+        setUser(response.data);
+        setIsAuthenticated(true);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      
+      // Clear state on refresh failure
+      setUser(null);
+      setIsAuthenticated(false);
+      return false;
+    }
+  }, []);
+
+  // Set up automatic token refresh
+  useEffect(() => {
+    if (!isAuthenticated) {return;}
+
+    // Check token expiry every 5 minutes and refresh if needed
+    const interval = setInterval(async () => {
+      if (TokenManager.isTokenExpired()) {
+        console.log('Token expired, attempting refresh...');
+        await refreshToken();
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, refreshToken]);
 
   const value = {
     user,

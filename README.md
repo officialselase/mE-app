@@ -1,6 +1,6 @@
 # Portfolio Enhancement Project
 
-A world-class portfolio website built with React, featuring authentication, content management, e-commerce capabilities, and a learning platform. This project demonstrates professional-grade development practices with performance optimization, accessibility compliance, and modern UI/UX design.
+A world-class portfolio website built with React and Django, featuring authentication, content management, e-commerce capabilities, and a learning platform. This project demonstrates professional-grade development practices with performance optimization, accessibility compliance, and modern UI/UX design powered by Django REST framework.
 
 ## 🚀 Features
 
@@ -27,16 +27,17 @@ A world-class portfolio website built with React, featuring authentication, cont
 - **Icons**: Lucide React
 
 ### Backend
-- **Runtime**: Node.js with Express.js
+- **Framework**: Django 4.2.7 with Django REST Framework 3.14.0
 - **Database**: SQLite (development) / PostgreSQL (production)
-- **Authentication**: JWT with refresh tokens
-- **Password Hashing**: bcrypt
-- **File Uploads**: Multer
-- **Payment Processing**: Stripe (ready for activation)
+- **Authentication**: JWT with custom User model
+- **Admin Interface**: Django Admin for content management
+- **API Documentation**: Django REST framework browsable API
+- **CORS**: Configured for frontend integration
 
 ## 📋 Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+ and npm (for frontend)
+- Python 3.8+ and pip (for Django backend)
 - Git
 - Google Gemini API key (for chat widget)
 
@@ -55,9 +56,9 @@ cd portfolio-enhancement
 # Install frontend dependencies
 npm install
 
-# Install backend dependencies
-cd backend
-npm install
+# Install Django backend dependencies
+cd backend-django
+pip install -r requirements.txt
 cd ..
 ```
 
@@ -77,68 +78,75 @@ Edit `.env` with your configuration:
 # Required: Gemini AI API Key
 VITE_GEMINI_API_KEY=your_gemini_api_key_here
 
-# Required: Backend API URL
-VITE_API_URL=http://localhost:5000
+# Required: Django Backend API URL
+VITE_DJANGO_API_URL=http://localhost:8000
 
 # Optional: Analytics and monitoring
 # VITE_GA_ID=G-XXXXXXXXXX
 # VITE_SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 ```
 
-#### Backend Environment Variables
+#### Django Backend Environment Variables
 
 ```bash
-cd backend
+cd backend-django
 cp .env.example .env
 ```
 
-Edit `backend/.env` with your configuration:
+Edit `backend-django/.env` with your configuration:
 
 ```env
-# Server Configuration
-PORT=5000
-NODE_ENV=development
+# Django Configuration
+SECRET_KEY=your_django_secret_key_here_change_in_production
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
 
-# Database Configuration
-DB_PATH=./data/portfolio.db
-
-# JWT Configuration (CHANGE IN PRODUCTION!)
-JWT_SECRET=your_jwt_secret_key_here_change_in_production
-JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_here_change_in_production
+# Database Configuration (SQLite for development)
+DATABASE_URL=sqlite:///db.sqlite3
 
 # CORS Configuration
-FRONTEND_URL=http://localhost:5173
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+# JWT Configuration
+JWT_SECRET_KEY=your_jwt_secret_key_here_change_in_production
 
 # Optional: Email service (for future features)
-# EMAIL_SERVICE=sendgrid
-# EMAIL_API_KEY=your_email_api_key_here
+# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# EMAIL_HOST=smtp.gmail.com
+# EMAIL_PORT=587
+# EMAIL_USE_TLS=True
+# EMAIL_HOST_USER=your_email@gmail.com
+# EMAIL_HOST_PASSWORD=your_app_password
 
 # Optional: Stripe (for e-commerce when activated)
+# STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
 # STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
-# STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 ```
 
-### 4. Database Setup
+### 4. Django Database Setup
 
 ```bash
-cd backend
-npm run setup
+cd backend-django
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py loaddata fixtures/sample_data.json
 cd ..
 ```
 
 This will:
 - Create the SQLite database
-- Run all migrations
-- Seed the database with sample content
+- Run Django migrations
+- Create a superuser account for Django admin
+- Load sample portfolio content
 
 ## 🚀 Development
 
 ### Start Development Servers
 
-**Terminal 1 - Backend:**
+**Terminal 1 - Django Backend:**
 ```bash
-cd backend
-npm run dev
+cd backend-django
+python manage.py runserver
 ```
 
 **Terminal 2 - Frontend:**
@@ -148,7 +156,8 @@ npm run dev
 
 The application will be available at:
 - Frontend: http://localhost:5173
-- Backend API: http://localhost:5000
+- Django Backend API: http://localhost:8000
+- Django Admin: http://localhost:8000/admin
 
 ### Available Scripts
 
@@ -164,38 +173,41 @@ npm run analyze:visual # Generate visual bundle analysis (stats.html)
 npm run analyze:open # Generate and open visual bundle analysis
 ```
 
-#### Backend Scripts
+#### Django Backend Scripts
 ```bash
-npm run dev          # Start development server with nodemon
-npm start            # Start production server
-npm run setup        # Initialize database and run migrations
-npm run migrate      # Run database migrations
-npm run seed         # Seed database with sample data
-npm test             # Run tests
+python manage.py runserver        # Start development server
+python manage.py migrate          # Run database migrations
+python manage.py createsuperuser  # Create admin user
+python manage.py collectstatic    # Collect static files (production)
+python manage.py test             # Run Django tests
+python manage.py shell            # Django shell
 ```
 
 ## 🌍 Environment-Specific Configuration
 
 ### Development Environment
 - Frontend: http://localhost:5173
-- Backend: http://localhost:5000
-- Database: SQLite (./backend/data/portfolio.db)
+- Django Backend: http://localhost:8000
+- Django Admin: http://localhost:8000/admin
+- Database: SQLite (./backend-django/db.sqlite3)
 - Hot module replacement enabled
-- Detailed error messages
+- Django debug mode enabled
 - Development tools enabled
 
 ### Staging Environment
 ```env
-NODE_ENV=staging
-VITE_API_URL=https://your-staging-api.com
+DEBUG=False
+VITE_DJANGO_API_URL=https://your-staging-django-api.com
+ALLOWED_HOSTS=your-staging-domain.com
 # Use staging database and API keys
 ```
 
 ### Production Environment
 ```env
-NODE_ENV=production
-VITE_API_URL=https://your-production-api.com
-# Use production database and API keys
+DEBUG=False
+VITE_DJANGO_API_URL=https://your-production-django-api.com
+ALLOWED_HOSTS=your-production-domain.com
+# Use production database (PostgreSQL recommended)
 # Enable error tracking and analytics
 ```
 
@@ -212,7 +224,7 @@ The application includes a custom authentication system with:
 
 ### Test Accounts
 
-After running the seed script, you can use these test accounts:
+After loading sample data, you can use these test accounts:
 
 ```
 Student Account:
@@ -222,29 +234,55 @@ Password: password123
 Instructor Account:
 Email: instructor@example.com
 Password: password123
+
+Admin Account:
+Use the superuser account created during setup
+Access Django Admin at: http://localhost:8000/admin
 ```
 
-## 📚 API Documentation
+## 📚 Django API Documentation
 
 ### Authentication Endpoints
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `POST /api/auth/refresh` - Refresh access token
-- `GET /api/auth/me` - Get current user
+- `POST /api/auth/register/` - User registration
+- `POST /api/auth/login/` - User login
+- `POST /api/auth/logout/` - User logout
+- `POST /api/auth/refresh/` - Refresh access token
+- `GET /api/auth/me/` - Get current user
 
-### Content Endpoints
-- `GET /api/projects` - Get all projects
-- `GET /api/thoughts` - Get all thoughts/blog posts
-- `GET /api/work` - Get work experience
+### Portfolio Content Endpoints
+- `GET /api/portfolio/projects/` - Get all projects (with pagination)
+- `GET /api/portfolio/projects/{id}/` - Get single project
+- `GET /api/portfolio/thoughts/` - Get all thoughts/blog posts (with pagination)
+- `GET /api/portfolio/thoughts/{id}/` - Get single thought
+- `GET /api/portfolio/work/` - Get work experience
 
 ### Learn Platform Endpoints
-- `GET /api/courses` - Get available courses
-- `POST /api/courses/:id/enroll` - Enroll in course
-- `GET /api/assignments/:id` - Get assignment details
-- `POST /api/assignments/:id/submit` - Submit assignment
+- `GET /api/learn/courses/` - Get available courses
+- `GET /api/learn/courses/{id}/` - Get course details
+- `POST /api/learn/courses/{id}/enroll/` - Enroll in course
+- `GET /api/learn/lessons/{id}/` - Get lesson details
+- `POST /api/learn/lessons/{id}/complete/` - Mark lesson complete
+- `GET /api/learn/assignments/{id}/` - Get assignment details
+- `POST /api/learn/assignments/{id}/submit/` - Submit assignment
+- `GET /api/learn/assignments/{id}/submissions/` - Get public submissions
+- `POST /api/learn/submissions/{id}/comments/` - Add comment to submission
 
-For complete API documentation, see `backend/docs/`.
+### Shop Endpoints (Future Use)
+- `GET /api/shop/products/` - List products
+- `GET /api/shop/cart/` - Get user cart
+- `POST /api/shop/cart/add/` - Add to cart
+- `POST /api/shop/orders/` - Create order
+
+### API Features
+- **Browsable API**: Visit http://localhost:8000/api/ for interactive documentation
+- **Django Admin**: Manage content at http://localhost:8000/admin
+- **Pagination**: All list endpoints support Django REST framework pagination
+- **Filtering**: Support for query parameters (featured, limit, page, etc.)
+- **CORS**: Configured for frontend integration
+
+### Additional Documentation
+- **[Django API Documentation](DJANGO_API_DOCUMENTATION.md)**: Complete API reference with examples
+- **[Django Setup Guide](DJANGO_SETUP_GUIDE.md)**: Detailed backend setup instructions
 
 ## 🎨 UI/UX Features
 
@@ -275,15 +313,22 @@ For complete API documentation, see `backend/docs/`.
 # Run frontend tests
 npm test
 
-# Run backend tests
-cd backend
-npm test
+# Run Django backend tests
+cd backend-django
+python manage.py test
 
 # Run accessibility tests
 npm run test:a11y
 
 # Run performance audits
 npm run audit:performance
+
+# Run Django API tests specifically
+cd backend-django
+python manage.py test authentication.tests
+python manage.py test portfolio.tests
+python manage.py test learn.tests
+python manage.py test shop.tests
 ```
 
 ## 📦 Deployment
@@ -298,50 +343,88 @@ npm run build
 2. Set environment variables in your hosting platform:
 ```
 VITE_GEMINI_API_KEY=your_production_api_key
-VITE_API_URL=https://your-backend-api.com
+VITE_DJANGO_API_URL=https://your-django-backend.com
 ```
 
 3. Deploy the `dist` folder
 
-### Backend Deployment (Railway/Render/Heroku)
+### Django Backend Deployment (Railway/Render/Heroku/DigitalOcean)
 
-1. Set environment variables in your hosting platform
-2. Ensure database is configured (PostgreSQL for production)
-3. Run migrations: `npm run migrate`
-4. Deploy the backend folder
+1. Set environment variables in your hosting platform:
+```
+SECRET_KEY=your_production_secret_key
+DEBUG=False
+ALLOWED_HOSTS=your-domain.com
+DATABASE_URL=postgres://user:pass@host:port/dbname
+CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
+```
+
+2. Install dependencies and run migrations:
+```bash
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py collectstatic --noinput
+python manage.py createsuperuser
+```
+
+3. Deploy the `backend-django` folder
+
+### Production Database Setup
+
+For production, use PostgreSQL:
+
+```bash
+# Install PostgreSQL adapter
+pip install psycopg2-binary
+
+# Update DATABASE_URL in environment variables
+DATABASE_URL=postgres://username:password@host:port/database_name
+```
 
 ## 🔍 Troubleshooting
 
 ### Common Issues
 
 **Port conflicts:**
-- Backend default port: 5000
+- Django backend default port: 8000
 - Frontend default port: 5173
-- Change ports in `.env` files if needed
+- Change ports if needed: `python manage.py runserver 8001`
 
 **Database issues:**
 ```bash
-cd backend
-rm -rf data/portfolio.db
-npm run setup
+cd backend-django
+rm db.sqlite3
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py loaddata fixtures/sample_data.json
 ```
 
 **Authentication issues:**
-- Check JWT secrets are set in backend `.env`
+- Check JWT secrets are set in Django settings
 - Verify CORS configuration matches frontend URL
 - Clear browser localStorage and cookies
+- Check Django admin user permissions
 
 **API connection issues:**
-- Verify `VITE_API_URL` matches backend server
-- Check backend server is running
-- Verify CORS settings
+- Verify `VITE_DJANGO_API_URL` matches Django server (http://localhost:8000)
+- Check Django server is running: `python manage.py runserver`
+- Verify CORS settings in Django settings
+- Check Django `ALLOWED_HOSTS` setting
+
+**Django-specific issues:**
+- **CORS errors**: Update `CORS_ALLOWED_ORIGINS` in Django settings
+- **404 on API calls**: Check Django URL patterns and trailing slashes
+- **Admin access**: Ensure superuser is created and has proper permissions
+- **Static files**: Run `python manage.py collectstatic` for production
 
 ### Getting Help
 
-1. Check the console for error messages
+1. Check the browser console for error messages
 2. Verify all environment variables are set
-3. Ensure both frontend and backend servers are running
-4. Check the API documentation in `backend/docs/`
+3. Ensure both frontend and Django servers are running
+4. Check the Django admin interface at http://localhost:8000/admin
+5. Use Django's browsable API at http://localhost:8000/api/
+6. Check Django server logs for backend errors
 
 ## 🤝 Contributing
 

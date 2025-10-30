@@ -17,7 +17,11 @@
     "analyze:open": "npm run analyze:visual && start dist/stats.html",
     "audit:performance": "node scripts/performance-audit.js",
     "audit:performance:dev": "AUDIT_URL=http://localhost:5173 node scripts/performance-audit.js",
-    "audit:performance:preview": "AUDIT_URL=http://localhost:4173 node scripts/performance-audit.js"
+    "audit:performance:preview": "AUDIT_URL=http://localhost:4173 node scripts/performance-audit.js",
+    "start:backend": "cd backend-django && python manage.py runserver",
+    "start:frontend": "npm run dev",
+    "start:both": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "verify:integration": "node scripts/verify-integration.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -36,6 +40,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -44,6 +49,7 @@
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.21",
     "chrome-launcher": "^1.2.1",
+    "concurrently": "^9.2.1",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",

@@ -1,14 +1,8 @@
 // src/components/GeminiChat.jsx
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { homeSummary } from "../pages/Home";
-import { workSummary } from "../pages/Work";
-import { learnSummary } from "../pages/Learn";
-import { shopSummary } from "../pages/Shop";
-import { thoughtsSummary } from "../pages/ThoughtsPage";
-import { projectsSummary } from "../pages/Projects";
-import { aboutSummary } from "../pages/About";
 import { Bot, User } from "lucide-react"; // icons
+import { portfolioContext } from "../data/portfolioContext";
 
 const GeminiChat = () => {
   const [messages, setMessages] = useState([
@@ -24,30 +18,35 @@ const GeminiChat = () => {
 
   // ✅ Initialize Gemini
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
-  // --- Context from projects ---
-  // Using the imported projectsSummary directly
+  // --- Context from portfolio data ---
+  const projectsContext = portfolioContext.projects.map(project => 
+    `${project.title}: ${project.description} (Technologies: ${project.technologies.join(', ')})`
+  ).join('\n\n');
 
   // --- Context from site pages ---
   const siteSummary = `
 Home:
-${homeSummary}
+Welcome to Selase's portfolio! This is a comprehensive showcase of his work as a full-stack developer, featuring projects, thoughts, work experience, and a learning platform. The site demonstrates modern web development practices with React, Django, and various cutting-edge technologies.
 
 Work:
-${workSummary}
+Selase has extensive experience in full-stack development, working with modern technologies like React, Django, Node.js, and cloud platforms. His work spans from frontend development to backend architecture and DevOps practices.
 
 Learn:
-${learnSummary}
+An interactive learning platform inspired by The Odin Project, where students can enroll in courses, complete assignments, and share their work with the community. Features include course progression tracking, assignment submissions, and peer collaboration.
 
 Shop:
-${shopSummary}
+E-commerce functionality (coming soon) that will showcase Selase's ability to build complete commercial applications with payment processing, inventory management, and order fulfillment.
 
 Thoughts:
-${thoughtsSummary}
+A collection of blog posts and technical articles where Selase shares insights about web development, best practices, and his learning journey. Topics include React patterns, Django architecture, and modern development workflows.
 
 About:
-${aboutSummary}
+Learn more about Selase's background, skills, and passion for creating innovative web solutions. Discover his journey from learning to professional development and his commitment to continuous improvement.
+
+Projects:
+A showcase of Selase's portfolio projects demonstrating various skills including full-stack web applications, API development, database design, and modern frontend frameworks. Each project includes live demos and source code.
 `;
 
   // --- Personality + Context ---
@@ -62,7 +61,9 @@ ${siteSummary}
 
 You also know about Selase’s projects:
 
-${projectsSummary}
+${projectsContext}
+
+Skills: ${portfolioContext.skills.frontend.join(', ')} (Frontend), ${portfolioContext.skills.backend.join(', ')} (Backend)
 
 - Important values: fair pay for fair work, creativity, and innovation.
 - Never say "I am an AI", instead say "I’m Ethel, Selase’s portfolio assistant".
@@ -75,7 +76,7 @@ ${projectsSummary}
 
   // --- Handle send ---
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim()) {return;}
 
     const newMessages = [
       ...messages,
@@ -153,9 +154,9 @@ ${projectsSummary}
               <Bot size={16} />
             </div>
             <div className="flex space-x-1">
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150" />
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300" />
             </div>
           </div>
         )}

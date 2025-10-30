@@ -12,30 +12,32 @@ artists, and his personal journey. It gives visitors a window into
 his values and perspectives.
 `;
 
-const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
+const ThoughtsPage = ({ setCurrentPage }) => {
   const [page, setPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
 
-  // Fetch thoughts with pagination
-  const { thoughts, loading, error, refetch } = useThoughts({ page, limit: 10 });
+  // Fetch thoughts with pagination from Django API
+  const { thoughts, pagination, loading, error, refetch } = useThoughts({ page, limit: 10 });
 
   // Featured posts (first 3 thoughts)
   const featuredPosts = thoughts.slice(0, 3);
 
   useEffect(() => {
-    if (currentPage === "thoughts") {
       window.scrollTo(0, 0);
-    }
-  }, [currentPage]);
+  }, []);
 
   const handleNextPage = () => {
-    setPage((prev) => prev + 1);
-    window.scrollTo(0, 0);
+    if (pagination?.hasNext) {
+      setPage((prev) => prev + 1);
+      window.scrollTo(0, 0);
+    }
   };
 
   const handlePrevPage = () => {
-    setPage((prev) => Math.max(1, prev - 1));
-    window.scrollTo(0, 0);
+    if (pagination?.hasPrevious) {
+      setPage((prev) => Math.max(1, prev - 1));
+      window.scrollTo(0, 0);
+    }
   };
 
   // Restored original gallery images
@@ -53,9 +55,9 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
   return (
     <>
       <MetaTags
-        title="Thoughts - Ransford Antwi"
-        description="Read Ransford Antwi's thoughts and insights on software development, technology, creativity, and professional growth. Explore essays and reflections from an experienced developer."
-        keywords="thoughts, blog, essays, software development, technology insights, programming, Ransford Antwi"
+        title="Thoughts - Selase K"
+        description="Read Selase K's thoughts and insights on software development, technology, creativity, and professional growth. Explore essays and reflections from an experienced developer."
+        keywords="thoughts, blog, essays, software development, technology insights, programming, Selase Kofi Agbai"
         url={`${window.location.origin}/thoughts`}
       />
       {selectedPost && (
@@ -85,7 +87,9 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
             {/* Error State */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-                <p className="text-red-600 mb-4">{error}</p>
+                <p className="text-red-600 mb-4">
+                  {error?.message || error || "Failed to load thoughts from the server"}
+                </p>
                 <button
                   onClick={refetch}
                   className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors duration-200"
@@ -112,10 +116,15 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
                     className="bg-gray-50 border border-gray-200 rounded-xl shadow-sm thought-card cursor-pointer"
                     onClick={() => setSelectedPost(post)}
                   >
-                    {post.images && post.images.length > 0 && (
+                    {(post.featured_image_url || post.featured_image || post.images || post.image) && (
                       <div className="w-full h-48">
                         <OptimizedImage
-                          src={post.images[0]}
+                          src={
+                            post.featured_image_url ||
+                            post.featured_image ||
+                            (Array.isArray(post.images) ? post.images[0] : post.images) ||
+                            post.image
+                          }
                           alt={post.title}
                           className="w-full h-full object-cover rounded-t-xl"
                         />
@@ -123,23 +132,26 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
                     )}
                     <div className="p-6">
                       <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
-                      <p className="text-gray-600 mb-4">{post.snippet}</p>
+                      <p className="text-gray-600 mb-4">
+                        {post.snippet || post.summary || post.description}
+                      </p>
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-gray-400">
-                          {new Date(post.date).toLocaleDateString('en-US', {
+                          {new Date(post.date || post.created_at || post.published_date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
                           })}
                         </p>
-                        {post.tags && post.tags.length > 0 && (
+                        {(post.tags || post.categories) && 
+                         (Array.isArray(post.tags) ? post.tags : post.categories)?.length > 0 && (
                           <div className="flex gap-2">
-                            {post.tags.slice(0, 3).map((tag, index) => (
+                            {(Array.isArray(post.tags) ? post.tags : post.categories).slice(0, 3).map((tag, index) => (
                               <span
                                 key={index}
                                 className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded"
                               >
-                                {tag}
+                                {typeof tag === 'string' ? tag : tag.name || tag}
                               </span>
                             ))}
                           </div>
@@ -153,15 +165,19 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
                 <div className="flex justify-center items-center gap-4 mt-8">
                   <button
                     onClick={handlePrevPage}
-                    disabled={page === 1}
+                    disabled={!pagination?.hasPrevious}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
-                  <span className="text-gray-600">Page {page}</span>
+                  <span className="text-gray-600">
+                    Page {page}
+                    {pagination?.totalPages && ` of ${pagination.totalPages}`}
+                    {pagination?.count && ` (${pagination.count} total)`}
+                  </span>
                   <button
                     onClick={handleNextPage}
-                    disabled={thoughts.length < 10}
+                    disabled={!pagination?.hasNext}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
@@ -187,7 +203,7 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
                   >
                     <h4 className="text-lg font-medium">{post.title}</h4>
                     <p className="text-sm text-gray-500">
-                      {new Date(post.date).toLocaleDateString('en-US', {
+                      {new Date(post.date || post.created_at || post.published_date).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -212,23 +228,24 @@ const ThoughtsPage = ({ setCurrentPage, currentPage }) => {
             >
               <h2 className="text-3xl font-bold mb-4">{selectedPost.title}</h2>
               <p className="text-sm text-gray-500 mb-6">
-                {new Date(selectedPost.date).toLocaleDateString('en-US', {
+                {new Date(selectedPost.date || selectedPost.created_at || selectedPost.published_date).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
                 })}
               </p>
               <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                {selectedPost.content}
+                {selectedPost.content || selectedPost.body || selectedPost.text}
               </div>
-              {selectedPost.tags && selectedPost.tags.length > 0 && (
+              {(selectedPost.tags || selectedPost.categories) && 
+               (Array.isArray(selectedPost.tags) ? selectedPost.tags : selectedPost.categories)?.length > 0 && (
                 <div className="flex gap-2 mt-6">
-                  {selectedPost.tags.map((tag, index) => (
+                  {(Array.isArray(selectedPost.tags) ? selectedPost.tags : selectedPost.categories).map((tag, index) => (
                     <span
                       key={index}
                       className="text-sm bg-blue-100 text-blue-600 px-3 py-1 rounded"
                     >
-                      {tag}
+                      {typeof tag === 'string' ? tag : tag.name || tag}
                     </span>
                   ))}
                 </div>

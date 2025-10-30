@@ -14,14 +14,14 @@ const StructuredData = ({ data }) => {
 export const createPersonSchema = () => ({
   "@context": "https://schema.org",
   "@type": "Person",
-  "name": "Ransford Antwi",
+  "name": "Selase K.",
   "jobTitle": "Full Stack Developer",
   "description": "Experienced full stack developer specializing in React, Node.js, and modern web technologies",
   "url": window.location.origin,
   "sameAs": [
-    "https://github.com/ransfordantwi", // Update with actual URLs
-    "https://linkedin.com/in/ransfordantwi",
-    "https://twitter.com/ransfordantwi"
+    "https://github.com/officialselase", // Update with actual URLs
+    "https://linkedin.com/in/selase-agbai",
+    "https://x.com/Sels_Officialgh"
   ],
   "knowsAbout": [
     "JavaScript",
@@ -29,15 +29,17 @@ export const createPersonSchema = () => ({
     "Node.js",
     "Full Stack Development",
     "Web Development",
-    "Software Engineering"
+    "Software Engineering",
+    "DevOps",
+    "Flutter Development"
   ],
   "nationality": "Ghanaian",
   "worksFor": {
-    "@type": "Organization",
+    "@type": "Self Employed",
     "name": "Freelance Developer"
   },
   "alumniOf": {
-    "@type": "EducationalOrganization",
+    "@type": "Ghana Technology University College",
     "name": "University" // Update with actual education
   }
 });
@@ -50,7 +52,7 @@ export const createProjectSchema = (project) => ({
   "description": project.description,
   "creator": {
     "@type": "Person",
-    "name": "Ransford Antwi"
+    "name": "Selase K."
   },
   "dateCreated": project.createdAt,
   "url": project.liveUrl || project.githubUrl,
@@ -68,13 +70,13 @@ export const createBlogPostSchema = (thought) => ({
   "articleBody": thought.content,
   "author": {
     "@type": "Person",
-    "name": "Ransford Antwi"
+    "name": "Selase K."
   },
   "datePublished": thought.date,
   "dateModified": thought.updatedAt || thought.date,
   "publisher": {
     "@type": "Person",
-    "name": "Ransford Antwi"
+    "name": "Selase K."
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
@@ -87,12 +89,12 @@ export const createBlogPostSchema = (thought) => ({
 export const createWebsiteSchema = () => ({
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Ransford Antwi Portfolio",
-  "description": "Personal portfolio and blog of Ransford Antwi, full stack developer",
+  "name": "Selase K. Portfolio",
+  "description": "Personal portfolio and blog of Selase K, full stack developer",
   "url": window.location.origin,
   "author": {
     "@type": "Person",
-    "name": "Ransford Antwi"
+    "name": "Selase K."
   },
   "potentialAction": {
     "@type": "SearchAction",

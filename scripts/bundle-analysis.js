@@ -18,7 +18,7 @@ const DIST_DIR = path.join(__dirname, '..', 'dist');
 const ASSETS_DIR = path.join(DIST_DIR, 'assets');
 
 function formatBytes(bytes) {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) {return '0 Bytes';}
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -54,10 +54,10 @@ function analyzeBundles() {
     jsSize += size;
     
     let category = '📄 Other';
-    if (file.includes('vendor')) category = '📚 Vendor';
-    else if (file.includes('three')) category = '🎨 Three.js';
-    else if (file.includes('ui')) category = '🎯 UI';
-    else if (file.includes('index')) category = '🏠 Main';
+    if (file.includes('vendor')) {category = '📚 Vendor';}
+    else if (file.includes('three')) {category = '🎨 Three.js';}
+    else if (file.includes('ui')) {category = '🎯 UI';}
+    else if (file.includes('index')) {category = '🏠 Main';}
     
     console.log(`${category}: ${file} (${formatBytes(size)})`);
   });

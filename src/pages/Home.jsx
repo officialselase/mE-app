@@ -13,22 +13,22 @@ and introduces featured projects and writings.
 It serves as the entry point to explore the rest of the site.
 `;
 
-const Home = ({ setCurrentPage, currentPage }) => {
-  // Fetch latest 8 projects from API
+const Home = ({ setCurrentPage }) => {
+  // Fetch latest 8 featured projects from Django API
   const {
     projects,
     loading: projectsLoading,
     error: projectsError,
     refetch: refetchProjects,
-  } = useProjects({ limit: 8 });
+  } = useProjects({ limit: 8, featured: true });
 
-  // Fetch latest 7 thoughts from API
+  // Fetch latest 7 featured thoughts from Django API
   const {
     thoughts,
     loading: thoughtsLoading,
     error: thoughtsError,
     refetch: refetchThoughts,
-  } = useThoughts({ limit: 7 });
+  } = useThoughts({ limit: 7, featured: true });
 
   // Memoized navigation handlers for performance
   const handleProjectsClick = useCallback(() => {
@@ -54,15 +54,15 @@ const Home = ({ setCurrentPage, currentPage }) => {
   return (
     <>
       <MetaTags
-        title="Home - Ransford Antwi"
-        description="Welcome to Ransford Antwi's portfolio. Experienced full stack developer specializing in React, Node.js, and modern web technologies. Explore my latest projects and thoughts on software development."
-        keywords="Ransford Antwi, full stack developer, React developer, Node.js, JavaScript, portfolio, software engineer"
+        title="Home - Selase Kofi Agbai"
+        description="Welcome to Selase K's portfolio. Experienced full stack developer specializing in React, Node.js, and modern web technologies. Explore my latest projects and thoughts on software development."
+        keywords="Selase K, full stack developer, React developer, Node.js, JavaScript, portfolio, software engineer"
         url={window.location.origin}
       />
       <StructuredData data={createWebsiteSchema()} />
       <div className="flex flex-col min-h-full">
       <main className="flex-grow w-full max-w-screen-xl mx-auto px-4 sm:px-6 md:px-8 py-8">
-        <h1 className="sr-only">Ransford Antwi - Full Stack Developer Portfolio</h1>
+        <h1 className="sr-only">Selase K. - Full Stack Developer Portfolio</h1>
         <section className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 text-gray-100 mt-4">
           {/* Projects Column */}
           <div className="col-span-1">
@@ -90,18 +90,26 @@ const Home = ({ setCurrentPage, currentPage }) => {
             {/* Projects List */}
             {!projectsLoading && !projectsError && (
               <ul className="list-none m-0 p-0 flex flex-col space-y-6">
-                {projects.map((item, index) => (
-                  <li key={item.id || index}>
-                    <div className="block text-inherit no-hover relative project-card cursor-pointer p-3 rounded-lg text-left">
-                      <h3 className="text-lg font-medium mb-1 text-yellow-300">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm leading-relaxed text-gray-400 mt-1">
-                        {item.description}
-                      </p>
+                {projects.length > 0 ? (
+                  projects.map((item, index) => (
+                    <li key={item.id || index}>
+                      <div className="block text-inherit no-hover relative project-card cursor-pointer p-3 rounded-lg text-left">
+                        <h3 className="text-lg font-medium mb-1 text-yellow-300">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm leading-relaxed text-gray-400 mt-1">
+                          {item.description || item.summary}
+                        </p>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li>
+                    <div className="text-sm text-gray-400 p-3">
+                      No featured projects available at the moment.
                     </div>
                   </li>
-                ))}
+                )}
                 <li>
                   <button
                     onClick={handleProjectsClick}
@@ -140,23 +148,37 @@ const Home = ({ setCurrentPage, currentPage }) => {
             {/* Thoughts List */}
             {!thoughtsLoading && !thoughtsError && (
               <ul className="list-none m-0 p-0 flex flex-col space-y-6">
-                {thoughts.map((item, index) => (
-                  <li key={item.id || index}>
-                    <div className="block text-inherit no-hover relative thought-card cursor-pointer p-3 rounded-lg">
-                      <h3 className="text-lg font-medium mb-1 text-yellow-300">
-                        {item.title}
-                      </h3>
-                      {item.snippet && (
-                        <p className="text-sm leading-relaxed text-gray-400 mt-1">
-                          {item.snippet}
-                        </p>
-                      )}
-                      {item.date && (
-                        <p className="text-xs text-gray-500 mt-1">{item.date}</p>
-                      )}
+                {thoughts.length > 0 ? (
+                  thoughts.map((item, index) => (
+                    <li key={item.id || index}>
+                      <div className="block text-inherit no-hover relative thought-card cursor-pointer p-3 rounded-lg">
+                        <h3 className="text-lg font-medium mb-1 text-yellow-300">
+                          {item.title}
+                        </h3>
+                        {(item.snippet || item.summary || item.description) && (
+                          <p className="text-sm leading-relaxed text-gray-400 mt-1">
+                            {item.snippet || item.summary || item.description}
+                          </p>
+                        )}
+                        {(item.date || item.created_at || item.published_date) && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(item.date || item.created_at || item.published_date).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li>
+                    <div className="text-sm text-gray-400 p-3">
+                      No featured thoughts available at the moment.
                     </div>
                   </li>
-                ))}
+                )}
                 <li>
                   <button
                     onClick={handleThoughtsClick}

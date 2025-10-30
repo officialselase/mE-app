@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+</head>
+<body>
+    <h1>Django Auth Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testAuth() {
+            const result = document.getElementById('result');
+            
+            try {
+                // Test login
+                const loginResponse = await fetch('http://localhost:8000/api/auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@example.com',
+                        password: 'admin123'
+                    })
+                });
+                
+                const loginData = await loginResponse.json();
+                console.log('Login response:', loginData);
+                
+                if (loginData.access_token) {
+                    result.innerHTML = `
+                        <p>✅ Login successful!</p>
+                        <p>Access token: ${loginData.access_token.substring(0, 50)}...</p>
+                        <p>Expires in: ${loginData.expires_in} seconds</p>
+                        <p>User: ${loginData.user.displayName}</p>
+                    `;
+                } else {
+                    result.innerHTML = `<p>❌ Login failed: ${JSON.stringify(loginData)}</p>`;
+                }
+                
+            } catch (error) {
+                result.innerHTML = `<p>❌ Error: ${error.message}</p>`;
+                console.error('Auth test error:', error);
+            }
+        }
+        
+        // Run test when page loads
+        testAuth();
+    </script>
+</body>
+</html>

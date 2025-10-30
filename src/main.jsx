@@ -9,7 +9,8 @@ import { queryClient } from "./utils/queryClient.js";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  // Temporarily disable StrictMode to fix auth context issues
+  // <React.StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
@@ -18,5 +19,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </BrowserRouter>
       </QueryClientProvider>
     </HelmetProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

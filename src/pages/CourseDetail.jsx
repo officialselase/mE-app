@@ -5,7 +5,7 @@ import LessonView from '../components/LessonView';
 import StudentProgress from '../components/StudentProgress';
 import SkeletonLoader from '../components/SkeletonLoader';
 import MetaTags from '../components/MetaTags';
-import { apiClient } from '../utils/api';
+import { learnAPI, handleDjangoError } from '../utils/djangoApi';
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -34,8 +34,35 @@ const CourseDetail = () => {
       setLoading(true);
       setError(null);
       
-      const response = await apiClient.get(`/api/courses/${courseId}`);
-      const courseData = response.data.course;
+      // Fetch course details
+      const courseResponse = await learnAPI.getCourse(courseId);
+      const courseData = courseResponse.data;
+      
+      // Check if user is enrolled by fetching enrollments
+      try {
+        const enrollmentsResponse = await learnAPI.getEnrollments();
+        const enrollments = enrollmentsResponse.data.results || enrollmentsResponse.data;
+        const enrollment = enrollments.find(e => e.course === parseInt(courseId));
+        
+        if (enrollment) {
+          courseData.is_enrolled = true;
+          courseData.enrollment = enrollment;
+          setCompletedLessons(enrollment.completed_lessons || []);
+          
+          // Calculate progress
+          const totalLessons = courseData.lessons?.length || 0;
+          const completedCount = enrollment.completed_lessons?.length || 0;
+          setProgress({
+            completed_lessons: enrollment.completed_lessons || [],
+            progress_percentage: totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+          });
+        } else {
+          courseData.is_enrolled = false;
+        }
+      } catch (enrollmentErr) {
+        // If enrollment fetch fails, assume not enrolled
+        courseData.is_enrolled = false;
+      }
       
       setCourse(courseData);
       
@@ -43,17 +70,10 @@ const CourseDetail = () => {
       if (courseData.lessons && courseData.lessons.length > 0) {
         setSelectedLesson(courseData.lessons[0]);
       }
-      
-      // If enrolled, fetch progress
-      if (courseData.is_enrolled) {
-        const progressResponse = await apiClient.get(`/api/courses/${courseId}/progress`);
-        const progressData = progressResponse.data;
-        setProgress(progressData);
-        setCompletedLessons(progressData.completed_lessons || []);
-      }
     } catch (err) {
       console.error('Error fetching course details:', err);
-      setError(err.response?.data?.error || err.message || 'Failed to fetch course details');
+      const djangoError = handleDjangoError(err);
+      setError(djangoError.message);
     } finally {
       setLoading(false);
     }
@@ -64,40 +84,49 @@ const CourseDetail = () => {
       setEnrolling(true);
       setError(null);
       
-      await apiClient.post(`/api/courses/${courseId}/enroll`);
+      await learnAPI.enrollInCourse(courseId);
       
       // Refresh course data to show enrolled state
       await fetchCourseDetails();
     } catch (err) {
       console.error('Error enrolling in course:', err);
-      setError(err.response?.data?.error || err.message || 'Failed to enroll in course');
+      const djangoError = handleDjangoError(err);
+      setError(djangoError.message);
     } finally {
       setEnrolling(false);
     }
   }, [courseId, fetchCourseDetails]);
 
-  const handleLessonComplete = useCallback((lessonId) => {
-    setCompletedLessons(prev => [...prev, lessonId]);
-    
-    // Update progress
-    if (progress && course) {
-      const newCompletedCount = completedLessons.length + 1;
-      const totalLessons = course.lessons.length;
-      const newProgress = {
-        ...progress,
-        completed_lessons: [...completedLessons, lessonId],
-        progress_percentage: Math.round((newCompletedCount / totalLessons) * 100)
-      };
-      setProgress(newProgress);
+  const handleLessonComplete = useCallback(async (lessonId) => {
+    try {
+      // Call Django API to mark lesson as complete
+      await learnAPI.completeLesson(lessonId);
+      
+      // Update local state
+      const newCompletedLessons = [...completedLessons, lessonId];
+      setCompletedLessons(newCompletedLessons);
+      
+      // Update progress
+      if (course) {
+        const totalLessons = course.lessons.length;
+        const newProgress = {
+          completed_lessons: newCompletedLessons,
+          progress_percentage: Math.round((newCompletedLessons.length / totalLessons) * 100)
+        };
+        setProgress(newProgress);
+      }
+    } catch (err) {
+      console.error('Error marking lesson as complete:', err);
+      // You might want to show an error message to the user
     }
-  }, [completedLessons, progress, course]);
+  }, [completedLessons, course]);
 
   const handleLessonSelect = useCallback((lesson) => {
     setSelectedLesson(lesson);
   }, []);
 
   const getNextLesson = useCallback(() => {
-    if (!course || !selectedLesson) return null;
+    if (!course || !selectedLesson) {return null;}
     
     const currentIndex = course.lessons.findIndex(l => l.id === selectedLesson.id);
     if (currentIndex < course.lessons.length - 1) {
@@ -107,7 +136,7 @@ const CourseDetail = () => {
   }, [course, selectedLesson]);
 
   const getPreviousLesson = useCallback(() => {
-    if (!course || !selectedLesson) return null;
+    if (!course || !selectedLesson) {return null;}
     
     const currentIndex = course.lessons.findIndex(l => l.id === selectedLesson.id);
     if (currentIndex > 0) {
@@ -193,9 +222,9 @@ const CourseDetail = () => {
   return (
     <>
       <MetaTags
-        title={`${course?.title || 'Course'} - Learn - Ransford Antwi`}
-        description={course?.description || 'Learn with this comprehensive course from Ransford Antwi. Access lessons, assignments, and track your progress.'}
-        keywords={`course, ${course?.title || 'learning'}, education, programming, web development, Ransford Antwi`}
+        title={`${course?.title || 'Course'} - Learn - Selase K.`}
+        description={course?.description || 'Learn with this comprehensive course from Selase K. Access lessons, assignments, and track your progress.'}
+        keywords={`course, ${course?.title || 'learning'}, education, programming, web development, Selase Kofi Agbai`}
         url={`${window.location.origin}/courses/${courseId}`}
       />
       <div className="min-h-screen bg-gray-50">
@@ -213,7 +242,7 @@ const CourseDetail = () => {
               <h1 className="text-3xl font-bold text-gray-900">{course.title}</h1>
               <p className="text-gray-600 mt-2">{course.description}</p>
               <div className="flex items-center mt-4 space-x-4 text-sm text-gray-500">
-                <span>Instructor: {course.instructor_name}</span>
+                <span>Instructor: {course.instructor}</span>
                 <span>•</span>
                 <span>{course.lessons?.length || 0} lessons</span>
                 {course.is_enrolled && progress && (
@@ -289,7 +318,7 @@ const CourseDetail = () => {
                           <div className="flex-1">
                             <div className="flex items-center">
                               <span className="text-sm text-gray-500 mr-2">
-                                {lesson.order}.
+                                {lesson.order_index + 1}.
                               </span>
                               <span className={`font-medium ${
                                 isSelected ? 'text-indigo-900' : 'text-gray-900'
@@ -327,7 +356,7 @@ const CourseDetail = () => {
                     <button
                       onClick={() => {
                         const prevLesson = getPreviousLesson();
-                        if (prevLesson) handleLessonSelect(prevLesson);
+                        if (prevLesson) {handleLessonSelect(prevLesson);}
                       }}
                       disabled={!getPreviousLesson()}
                       className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 disabled:text-gray-400 disabled:cursor-not-allowed"
@@ -341,7 +370,7 @@ const CourseDetail = () => {
                     <button
                       onClick={() => {
                         const nextLesson = getNextLesson();
-                        if (nextLesson) handleLessonSelect(nextLesson);
+                        if (nextLesson) {handleLessonSelect(nextLesson);}
                       }}
                       disabled={!getNextLesson()}
                       className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 disabled:text-gray-400 disabled:cursor-not-allowed"

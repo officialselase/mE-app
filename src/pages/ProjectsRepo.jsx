@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import AssignmentSubmissionForm from '../components/AssignmentSubmissionForm';
 import SubmissionsList from '../components/SubmissionsList';
 import SkeletonLoader from '../components/SkeletonLoader';
-import { apiClient } from '../utils/api';
+import { learnAPI, handleDjangoError } from '../utils/djangoApi';
 
 const ProjectsRepo = () => {
   const { user } = useAuth();
@@ -23,19 +23,64 @@ const ProjectsRepo = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch all assignments from all enrolled courses
-      const assignmentsResponse = await apiClient.get('/api/assignments');
-      const assignmentsData = assignmentsResponse.data.assignments || [];
-      setAssignments(assignmentsData);
+      // Get user's enrollments to find courses
+      const enrollmentsResponse = await learnAPI.getEnrollments();
+      const enrollments = enrollmentsResponse?.data?.results || enrollmentsResponse?.data || [];
+      
+      // Fetch assignments from all enrolled courses
+      const allAssignments = [];
+      for (const enrollment of enrollments) {
+        try {
+          // Get course details to get lessons
+          const courseResponse = await learnAPI.getCourse(enrollment.course);
+          const course = courseResponse?.data;
+          
+          if (!course) {continue;}
+          
+          // Get lessons for this course
+          const lessonsResponse = await learnAPI.getLessons(course.id);
+          const lessons = lessonsResponse?.data?.results || lessonsResponse?.data || [];
+          
+          // Get assignments for each lesson in the course
+          for (const lesson of lessons) {
+            try {
+              const assignmentsResponse = await learnAPI.getAssignments(lesson.id);
+              const lessonAssignments = assignmentsResponse?.data?.results || assignmentsResponse?.data || [];
+              
+              // Add course and lesson info to assignments
+              if (Array.isArray(lessonAssignments)) {
+                lessonAssignments.forEach(assignment => {
+                  assignment.course_title = course.title;
+                  assignment.lesson_title = lesson.title;
+                });
+                
+                allAssignments.push(...lessonAssignments);
+              }
+            } catch (lessonErr) {
+              console.error(`Error fetching assignments for lesson ${lesson.id}:`, lessonErr);
+            }
+          }
+        } catch (courseErr) {
+          console.error(`Error fetching course ${enrollment.course}:`, courseErr);
+        }
+      }
+      
+      setAssignments(allAssignments);
 
       // Fetch user's submissions
-      const submissionsResponse = await apiClient.get('/api/submissions/my-submissions');
-      const submissionsData = submissionsResponse.data.submissions || [];
-      setMySubmissions(submissionsData);
+      try {
+        const submissionsResponse = await learnAPI.getSubmissions();
+        const submissionsData = submissionsResponse?.data?.results || submissionsResponse?.data || [];
+        setMySubmissions(Array.isArray(submissionsData) ? submissionsData : []);
+      } catch (submissionsErr) {
+        console.error('Error fetching submissions:', submissionsErr);
+        setMySubmissions([]);
+      }
 
     } catch (err) {
       console.error('Error fetching assignments and submissions:', err);
-      setError(err.response?.data?.error || err.message || 'Failed to load assignments');
+      const djangoError = handleDjangoError(err);
+      setError(djangoError.message);
     } finally {
       setLoading(false);
     }
@@ -44,13 +89,18 @@ const ProjectsRepo = () => {
   // Fetch public submissions for a specific assignment
   const fetchPublicSubmissions = useCallback(async (assignmentId) => {
     try {
-      const response = await apiClient.get(`/api/assignments/${assignmentId}/submissions`);
+      const response = await learnAPI.getSubmissions(assignmentId);
+      const submissions = response?.data?.results || response?.data || [];
       setPublicSubmissions(prev => ({
         ...prev,
-        [assignmentId]: response.data.submissions || []
+        [assignmentId]: Array.isArray(submissions) ? submissions : []
       }));
     } catch (err) {
       console.error('Error fetching public submissions:', err);
+      setPublicSubmissions(prev => ({
+        ...prev,
+        [assignmentId]: []
+      }));
     }
   }, []);
 
@@ -103,12 +153,12 @@ const ProjectsRepo = () => {
 
   // Get submission for assignment
   const getSubmissionForAssignment = useCallback((assignmentId) => {
-    return mySubmissions.find(sub => sub.assignment_id === assignmentId);
+    return mySubmissions.find(sub => sub.assignment === assignmentId);
   }, [mySubmissions]);
 
   // Check if assignment is overdue
   const isOverdue = useCallback((dueDate) => {
-    if (!dueDate) return false;
+    if (!dueDate) {return false;}
     return new Date(dueDate) < new Date();
   }, []);
 

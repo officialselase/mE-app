@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiClient } from '../utils/api';
+import { learnAPI, handleDjangoError } from '../utils/djangoApi';
 
 const AssignmentSubmissionForm = ({ 
   assignment, 
@@ -30,7 +30,7 @@ const AssignmentSubmissionForm = ({
   }, [existingSubmission]);
 
   const validateUrl = (url, type) => {
-    if (!url) return null; // URLs are optional
+    if (!url) {return null;} // URLs are optional
     
     try {
       const urlObj = new URL(url);
@@ -123,15 +123,15 @@ const AssignmentSubmissionForm = ({
       
       let response;
       if (existingSubmission) {
-        // Update existing submission
-        response = await apiClient.put(`/api/submissions/${existingSubmission.id}`, submissionData);
+        // Update existing submission - Django uses PATCH for updates
+        response = await learnAPI.updateSubmission(existingSubmission.id, submissionData);
       } else {
         // Create new submission
-        response = await apiClient.post(`/api/assignments/${assignment.id}/submit`, submissionData);
+        response = await learnAPI.submitAssignment(assignment.id, submissionData);
       }
       
       if (onSubmit) {
-        onSubmit(response.data.submission);
+        onSubmit(response.data);
       }
       
       // Reset form if creating new submission
@@ -146,8 +146,27 @@ const AssignmentSubmissionForm = ({
       
     } catch (err) {
       console.error('Error submitting assignment:', err);
-      const errorMessage = err.response?.data?.error || err.message || 'Failed to submit assignment';
-      setErrors({ general: errorMessage });
+      const djangoError = handleDjangoError(err);
+      
+      if (djangoError.type === 'validation' && djangoError.errors) {
+        // Handle field-specific validation errors from Django
+        const fieldErrors = {};
+        Object.keys(djangoError.errors).forEach(field => {
+          // Map Django field names to form field names
+          const fieldMap = {
+            'github_repo_url': 'githubRepoUrl',
+            'live_preview_url': 'livePreviewUrl',
+            'notes': 'notes',
+            'is_public': 'isPublic',
+            'non_field_errors': 'general'
+          };
+          const formField = fieldMap[field] || field;
+          fieldErrors[formField] = djangoError.errors[field];
+        });
+        setErrors(fieldErrors);
+      } else {
+        setErrors({ general: djangoError.message });
+      }
     } finally {
       setSubmitting(false);
     }

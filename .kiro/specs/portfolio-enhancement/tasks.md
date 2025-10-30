@@ -727,14 +727,16 @@
     - Test bear animations during login/register
     - _Requirements: 11.1, 11.2, 11.9, 11.10, 11.14_
 
-  - [ ] 13.2 Manual end-to-end testing of learn platform
+  - [x] 13.2 Manual end-to-end testing of learn platform
+
+
     - Test course enrollment → lesson viewing → assignment submission
     - Test viewing other students' submissions
     - Test commenting on submissions
     - Test progress tracking
     - _Requirements: 13.1, 13.2, 13.4, 13.8, 13.9_
 
-  - [ ] 13.3 Manual end-to-end testing of content management
+  - [x] 13.3 Manual end-to-end testing of content management
     - Test fetching and displaying projects on Home and Projects pages
     - Test fetching and displaying thoughts on Home and Thoughts pages
     - Test fetching and displaying work experience on Work page

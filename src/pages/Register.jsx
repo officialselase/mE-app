@@ -131,197 +131,239 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-            <p className="text-gray-600">Join us to get started</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex flex-col">
+      {/* Navigation Header */}
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm py-4 px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link to="/" className="text-2xl font-bold text-gray-900 hover:text-purple-600 transition-colors">
+            mE-app
+          </Link>
+          <nav className="flex space-x-6">
+            <Link to="/" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
+              Home
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
+              About
+            </Link>
+            <Link to="/projects" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
+              Projects
+            </Link>
+            <Link to="/thoughts" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
+              Thoughts
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-          {/* Animated Bear */}
-          <AnimatedBear
-            isPasswordFocused={isPasswordFocused || isConfirmPasswordFocused}
-            isEmailFocused={isEmailFocused}
-            authState={authState}
-          />
-
-          {/* Error Message */}
-          {error && (
-            <div 
-              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-              role="alert"
-              aria-live="polite"
-            >
-              {error}
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+              <p className="text-gray-600">Join us to get started</p>
             </div>
-          )}
 
-          {/* Register Form */}
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Display Name Field */}
-            <div className="mb-4">
-              <label 
-                htmlFor="displayName" 
-                className="block text-sm font-medium text-gray-700 mb-2"
+            {/* Animated Bear */}
+            <AnimatedBear
+              isPasswordFocused={isPasswordFocused || isConfirmPasswordFocused}
+              isEmailFocused={isEmailFocused}
+              authState={authState}
+            />
+
+            {/* Error Message */}
+            {error && (
+              <div 
+                className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                role="alert"
+                aria-live="polite"
               >
-                Display Name
-              </label>
-              <input
-                type="text"
-                id="displayName"
-                value={displayName}
-                onChange={(e) => {
-                  setDisplayName(e.target.value);
-                  setDisplayNameError('');
-                  setError('');
-                }}
-                onBlur={() => {
-                  const err = validateDisplayName(displayName);
-                  setDisplayNameError(err);
-                }}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all ${
-                  displayNameError ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="John Doe"
-                disabled={isLoading}
-                aria-invalid={displayNameError ? 'true' : 'false'}
-                aria-describedby={displayNameError ? 'displayName-error' : undefined}
-              />
-              {displayNameError && (
-                <p 
-                  id="displayName-error" 
-                  className="mt-1 text-sm text-red-600"
-                  role="alert"
+                {error}
+              </div>
+            )}
+
+            {/* Register Form */}
+            <form onSubmit={handleSubmit} noValidate>
+              {/* Display Name Field */}
+              <div className="mb-4">
+                <label 
+                  htmlFor="displayName" 
+                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  {displayNameError}
-                </p>
-              )}
-            </div>
+                  Display Name
+                </label>
+                <input
+                  type="text"
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => {
+                    setDisplayName(e.target.value);
+                    setDisplayNameError('');
+                    setError('');
+                  }}
+                  onBlur={() => {
+                    const err = validateDisplayName(displayName);
+                    setDisplayNameError(err);
+                  }}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all ${
+                    displayNameError ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="John Doe"
+                  disabled={isLoading}
+                  aria-invalid={displayNameError ? 'true' : 'false'}
+                  aria-describedby={displayNameError ? 'displayName-error' : undefined}
+                />
+                {displayNameError && (
+                  <p 
+                    id="displayName-error" 
+                    className="mt-1 text-sm text-red-600"
+                    role="alert"
+                  >
+                    {displayNameError}
+                  </p>
+                )}
+              </div>
 
-            {/* Email Field */}
-            <div className="mb-4">
-              <label 
-                htmlFor="email" 
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                  setError('');
-                }}
-                onFocus={() => setIsEmailFocused(true)}
-                onBlur={() => {
-                  setIsEmailFocused(false);
-                  const err = validateEmail(email);
-                  setEmailError(err);
-                }}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all ${
-                  emailError ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="you@example.com"
-                disabled={isLoading}
-                aria-invalid={emailError ? 'true' : 'false'}
-                aria-describedby={emailError ? 'email-error' : undefined}
-              />
-              {emailError && (
-                <p 
-                  id="email-error" 
-                  className="mt-1 text-sm text-red-600"
-                  role="alert"
+              {/* Email Field */}
+              <div className="mb-4">
+                <label 
+                  htmlFor="email" 
+                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  {emailError}
-                </p>
-              )}
-            </div>
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError('');
+                    setError('');
+                  }}
+                  onFocus={() => setIsEmailFocused(true)}
+                  onBlur={() => {
+                    setIsEmailFocused(false);
+                    const err = validateEmail(email);
+                    setEmailError(err);
+                  }}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all ${
+                    emailError ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="you@example.com"
+                  disabled={isLoading}
+                  aria-invalid={emailError ? 'true' : 'false'}
+                  aria-describedby={emailError ? 'email-error' : undefined}
+                />
+                {emailError && (
+                  <p 
+                    id="email-error" 
+                    className="mt-1 text-sm text-red-600"
+                    role="alert"
+                  >
+                    {emailError}
+                  </p>
+                )}
+              </div>
 
-            {/* Password Field */}
-            <div className="mb-4">
-              <PasswordInput
-                id="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError('');
-                  setConfirmPasswordError('');
-                  setError('');
-                }}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => {
-                  setIsPasswordFocused(false);
-                  const err = validatePassword(password);
-                  setPasswordError(err);
-                  // Also validate confirm password if it has a value
-                  if (confirmPassword) {
-                    const confirmErr = validateConfirmPassword(confirmPassword, password);
-                    setConfirmPasswordError(confirmErr);
-                  }
-                }}
-                error={passwordError}
+              {/* Password Field */}
+              <div className="mb-4">
+                <PasswordInput
+                  id="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordError('');
+                    setConfirmPasswordError('');
+                    setError('');
+                  }}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => {
+                    setIsPasswordFocused(false);
+                    const err = validatePassword(password);
+                    setPasswordError(err);
+                    // Also validate confirm password if it has a value
+                    if (confirmPassword) {
+                      const confirmErr = validateConfirmPassword(confirmPassword, password);
+                      setConfirmPasswordError(confirmErr);
+                    }
+                  }}
+                  error={passwordError}
+                  disabled={isLoading}
+                  label="Password"
+                  showStrengthIndicator={true}
+                  className="focus:ring-purple-500"
+                  required
+                />
+              </div>
+
+              {/* Confirm Password Field */}
+              <div className="mb-6">
+                <PasswordInput
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    setConfirmPasswordError('');
+                    setError('');
+                  }}
+                  onFocus={() => setIsConfirmPasswordFocused(true)}
+                  onBlur={() => {
+                    setIsConfirmPasswordFocused(false);
+                    const err = validateConfirmPassword(confirmPassword, password);
+                    setConfirmPasswordError(err);
+                  }}
+                  error={confirmPasswordError}
+                  disabled={isLoading}
+                  label="Confirm Password"
+                  placeholder="••••••••"
+                  className="focus:ring-purple-500"
+                  required
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
                 disabled={isLoading}
-                label="Password"
-                showStrengthIndicator={true}
-                className="focus:ring-purple-500"
-                required
-              />
-            </div>
-
-            {/* Confirm Password Field */}
-            <div className="mb-6">
-              <PasswordInput
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  setConfirmPasswordError('');
-                  setError('');
-                }}
-                onFocus={() => setIsConfirmPasswordFocused(true)}
-                onBlur={() => {
-                  setIsConfirmPasswordFocused(false);
-                  const err = validateConfirmPassword(confirmPassword, password);
-                  setConfirmPasswordError(err);
-                }}
-                error={confirmPasswordError}
-                disabled={isLoading}
-                label="Confirm Password"
-                placeholder="••••••••"
-                className="focus:ring-purple-500"
-                required
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'Creating account...' : 'Create Account'}
-            </button>
-          </form>
-
-          {/* Login Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link 
-                to="/login" 
-                className="text-purple-600 hover:text-purple-700 font-medium focus:outline-none focus:underline"
+                className="w-full bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Sign in
-              </Link>
-            </p>
+                {isLoading ? 'Creating account...' : 'Create Account'}
+              </button>
+            </form>
+
+            {/* Login Link */}
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Already have an account?{' '}
+                <Link 
+                  to="/login" 
+                  className="text-purple-600 hover:text-purple-700 font-medium focus:outline-none focus:underline"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer Navigation */}
+      <footer className="bg-white/80 backdrop-blur-sm shadow-sm py-4 px-6 mt-auto">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-gray-600 text-sm">
+            Explore more: 
+            <Link to="/work" className="ml-2 text-purple-600 hover:text-purple-700 font-medium">
+              Work
+            </Link>
+            |
+            <Link to="/shop" className="ml-2 text-purple-600 hover:text-purple-700 font-medium">
+              Shop
+            </Link>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

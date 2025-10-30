@@ -2,7 +2,7 @@ import React from 'react';
 import CourseCard from './CourseCard';
 import SkeletonLoader from './SkeletonLoader';
 
-const CoursesList = ({ courses, loading, error, onEnroll, onRetry }) => {
+const CoursesList = ({ courses, enrollments, loading, error, onEnroll, onRetry, isEnrolling }) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -23,7 +23,9 @@ const CoursesList = ({ courses, loading, error, onEnroll, onRetry }) => {
             </svg>
           </div>
           <h3 className="text-lg font-medium text-red-800 mb-2">Failed to Load Courses</h3>
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-red-600 mb-4">
+            {typeof error === 'string' ? error : error?.message || 'An error occurred while loading courses'}
+          </p>
           <button
             onClick={onRetry}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200 font-medium"
@@ -69,6 +71,8 @@ const CoursesList = ({ courses, loading, error, onEnroll, onRetry }) => {
                 key={course.id}
                 course={course}
                 onEnroll={onEnroll}
+                isEnrolling={isEnrolling}
+                showProgress={true}
               />
             ))}
           </div>
@@ -87,6 +91,8 @@ const CoursesList = ({ courses, loading, error, onEnroll, onRetry }) => {
                 key={course.id}
                 course={course}
                 onEnroll={onEnroll}
+                isEnrolling={isEnrolling}
+                showProgress={false}
               />
             ))}
           </div>

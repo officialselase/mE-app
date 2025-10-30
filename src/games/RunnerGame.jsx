@@ -8,10 +8,10 @@ const RunnerGame = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    let x = 50;
+    const x = 50;
     let y = 180;
     let velocityY = 0;
-    let gravity = 0.6;
+    const gravity = 0.6;
     let isJumping = false;
 
     const keyDownHandler = (e) => {

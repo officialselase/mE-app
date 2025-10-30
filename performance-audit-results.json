@@ -2,253 +2,253 @@
   {
     "page": "Home",
     "device": "mobile",
-    "performanceScore": 99,
+    "performanceScore": 52,
     "metrics": {
-      "firstContentfulPaint": "1.5 s",
-      "largestContentfulPaint": "1.7 s",
-      "speedIndex": "2.6 s",
+      "firstContentfulPaint": "15.0 s",
+      "largestContentfulPaint": "28.2 s",
+      "speedIndex": "15.0 s",
       "cumulativeLayoutShift": "0.001",
-      "totalBlockingTime": "0 ms",
-      "interactive": "2.2 s"
+      "totalBlockingTime": "210 ms",
+      "interactive": "29.8 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Home",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 78,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "1.0 s",
+      "firstContentfulPaint": "2.6 s",
+      "largestContentfulPaint": "4.8 s",
+      "speedIndex": "3.3 s",
       "cumulativeLayoutShift": "0.001",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "4.8 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "About",
     "device": "mobile",
-    "performanceScore": 99,
+    "performanceScore": 53,
     "metrics": {
-      "firstContentfulPaint": "1.5 s",
-      "largestContentfulPaint": "1.7 s",
-      "speedIndex": "1.5 s",
+      "firstContentfulPaint": "13.8 s",
+      "largestContentfulPaint": "26.9 s",
+      "speedIndex": "13.8 s",
       "cumulativeLayoutShift": "0.001",
-      "totalBlockingTime": "0 ms",
-      "interactive": "1.7 s"
+      "totalBlockingTime": "180 ms",
+      "interactive": "30.6 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "About",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 78,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "0.4 s",
+      "firstContentfulPaint": "2.6 s",
+      "largestContentfulPaint": "5.0 s",
+      "speedIndex": "2.6 s",
       "cumulativeLayoutShift": "0.001",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "5.0 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Work",
     "device": "mobile",
-    "performanceScore": 99,
+    "performanceScore": 53,
     "metrics": {
-      "firstContentfulPaint": "1.5 s",
-      "largestContentfulPaint": "1.7 s",
-      "speedIndex": "2.3 s",
+      "firstContentfulPaint": "15.0 s",
+      "largestContentfulPaint": "28.2 s",
+      "speedIndex": "15.0 s",
       "cumulativeLayoutShift": "0",
-      "totalBlockingTime": "10 ms",
-      "interactive": "2.1 s"
+      "totalBlockingTime": "170 ms",
+      "interactive": "29.8 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Work",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 78,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "0.9 s",
-      "cumulativeLayoutShift": "0.001",
+      "firstContentfulPaint": "2.6 s",
+      "largestContentfulPaint": "4.8 s",
+      "speedIndex": "3.2 s",
+      "cumulativeLayoutShift": "0",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "4.8 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Projects",
     "device": "mobile",
-    "performanceScore": 98,
+    "performanceScore": 54,
     "metrics": {
-      "firstContentfulPaint": "1.6 s",
-      "largestContentfulPaint": "1.9 s",
-      "speedIndex": "2.9 s",
+      "firstContentfulPaint": "15.0 s",
+      "largestContentfulPaint": "28.1 s",
+      "speedIndex": "15.0 s",
       "cumulativeLayoutShift": "0.001",
-      "totalBlockingTime": "0 ms",
-      "interactive": "1.9 s"
+      "totalBlockingTime": "140 ms",
+      "interactive": "28.9 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Projects",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 78,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "1.1 s",
+      "firstContentfulPaint": "2.6 s",
+      "largestContentfulPaint": "4.8 s",
+      "speedIndex": "3.4 s",
       "cumulativeLayoutShift": "0.001",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "4.8 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Thoughts",
     "device": "mobile",
-    "performanceScore": 99,
+    "performanceScore": 54,
     "metrics": {
-      "firstContentfulPaint": "1.5 s",
-      "largestContentfulPaint": "1.7 s",
-      "speedIndex": "2.2 s",
+      "firstContentfulPaint": "15.0 s",
+      "largestContentfulPaint": "28.1 s",
+      "speedIndex": "15.0 s",
       "cumulativeLayoutShift": "0.001",
-      "totalBlockingTime": "10 ms",
-      "interactive": "2.1 s"
+      "totalBlockingTime": "130 ms",
+      "interactive": "31.7 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Thoughts",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 78,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "0.9 s",
+      "firstContentfulPaint": "2.6 s",
+      "largestContentfulPaint": "4.8 s",
+      "speedIndex": "3.2 s",
       "cumulativeLayoutShift": "0.001",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "4.8 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Shop",
     "device": "mobile",
-    "performanceScore": 77,
+    "performanceScore": 54,
     "metrics": {
-      "firstContentfulPaint": "1.5 s",
-      "largestContentfulPaint": "6.2 s",
-      "speedIndex": "2.0 s",
+      "firstContentfulPaint": "15.0 s",
+      "largestContentfulPaint": "31.9 s",
+      "speedIndex": "15.0 s",
       "cumulativeLayoutShift": "0.012",
-      "totalBlockingTime": "20 ms",
-      "interactive": "6.2 s"
+      "totalBlockingTime": "120 ms",
+      "interactive": "32.0 s"
     },
     "passed": false
   },
   {
     "page": "Shop",
     "device": "desktop",
-    "performanceScore": 99,
+    "performanceScore": 69,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "2.0 s",
-      "speedIndex": "0.6 s",
+      "firstContentfulPaint": "2.6 s",
+      "largestContentfulPaint": "9.6 s",
+      "speedIndex": "4.2 s",
       "cumulativeLayoutShift": "0.012",
       "totalBlockingTime": "0 ms",
-      "interactive": "2.0 s"
+      "interactive": "9.6 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Cart",
     "device": "mobile",
-    "performanceScore": 99,
+    "performanceScore": 53,
     "metrics": {
-      "firstContentfulPaint": "1.6 s",
-      "largestContentfulPaint": "1.9 s",
-      "speedIndex": "1.6 s",
+      "firstContentfulPaint": "15.1 s",
+      "largestContentfulPaint": "28.4 s",
+      "speedIndex": "15.1 s",
       "cumulativeLayoutShift": "0.001",
-      "totalBlockingTime": "10 ms",
-      "interactive": "2.8 s"
+      "totalBlockingTime": "160 ms",
+      "interactive": "29.5 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Cart",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 79,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "0.4 s",
+      "firstContentfulPaint": "2.6 s",
+      "largestContentfulPaint": "4.8 s",
+      "speedIndex": "2.8 s",
       "cumulativeLayoutShift": "0.001",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "4.8 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Login",
     "device": "mobile",
-    "performanceScore": 99,
+    "performanceScore": 54,
     "metrics": {
-      "firstContentfulPaint": "1.5 s",
-      "largestContentfulPaint": "1.7 s",
-      "speedIndex": "1.5 s",
+      "firstContentfulPaint": "13.7 s",
+      "largestContentfulPaint": "25.8 s",
+      "speedIndex": "13.7 s",
       "cumulativeLayoutShift": "0.001",
-      "totalBlockingTime": "0 ms",
-      "interactive": "2.1 s"
+      "totalBlockingTime": "140 ms",
+      "interactive": "29.3 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Login",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 82,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "0.4 s",
+      "firstContentfulPaint": "2.4 s",
+      "largestContentfulPaint": "4.4 s",
+      "speedIndex": "2.5 s",
       "cumulativeLayoutShift": "0.001",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "4.4 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Register",
     "device": "mobile",
-    "performanceScore": 99,
+    "performanceScore": 54,
     "metrics": {
-      "firstContentfulPaint": "1.5 s",
-      "largestContentfulPaint": "1.7 s",
-      "speedIndex": "1.5 s",
-      "cumulativeLayoutShift": "0.001",
-      "totalBlockingTime": "0 ms",
-      "interactive": "1.7 s"
+      "firstContentfulPaint": "13.7 s",
+      "largestContentfulPaint": "25.8 s",
+      "speedIndex": "13.7 s",
+      "cumulativeLayoutShift": "0.002",
+      "totalBlockingTime": "140 ms",
+      "interactive": "29.6 s"
     },
-    "passed": true
+    "passed": false
   },
   {
     "page": "Register",
     "device": "desktop",
-    "performanceScore": 100,
+    "performanceScore": 81,
     "metrics": {
-      "firstContentfulPaint": "0.4 s",
-      "largestContentfulPaint": "0.4 s",
-      "speedIndex": "0.4 s",
-      "cumulativeLayoutShift": "0.001",
+      "firstContentfulPaint": "2.4 s",
+      "largestContentfulPaint": "4.4 s",
+      "speedIndex": "2.6 s",
+      "cumulativeLayoutShift": "0.002",
       "totalBlockingTime": "0 ms",
-      "interactive": "0.4 s"
+      "interactive": "4.4 s"
     },
-    "passed": true
+    "passed": false
   }
 ]

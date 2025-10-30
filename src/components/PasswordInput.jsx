@@ -20,7 +20,7 @@ const PasswordInput = ({
 
   // Password strength calculation
   const calculatePasswordStrength = (password) => {
-    if (!password) return { score: 0, label: '', color: '' };
+    if (!password) {return { score: 0, label: '', color: '' };}
 
     let score = 0;
     const checks = {
@@ -33,7 +33,7 @@ const PasswordInput = ({
 
     // Calculate score
     Object.values(checks).forEach(check => {
-      if (check) score++;
+      if (check) {score++;}
     });
 
     // Determine strength level

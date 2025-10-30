@@ -82,7 +82,7 @@ const FallbackImage = ({
           aria-label="Loading image"
         >
           <div className="text-gray-400">
-            <div className="h-6 w-6 rounded-full bg-gray-300"></div>
+            <div className="h-6 w-6 rounded-full bg-gray-300" />
           </div>
         </div>
       )}

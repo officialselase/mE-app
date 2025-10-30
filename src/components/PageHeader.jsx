@@ -2,7 +2,19 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 
 const PageHeader = ({ setCurrentPage, currentPage, cartCount }) => {
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, logout, user, isLoading } = useAuth();
+  
+  // Don't render anything while auth is loading
+  if (isLoading) {
+    return (
+      <header className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 md:px-8 py-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300 rounded w-48 mb-4" />
+          <div className="h-6 bg-gray-300 rounded w-32" />
+        </div>
+      </header>
+    );
+  }
 
   const handleLogout = async () => {
     await logout();
